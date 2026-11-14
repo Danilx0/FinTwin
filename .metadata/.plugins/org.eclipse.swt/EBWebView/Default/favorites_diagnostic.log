@@ -77,3 +77,13 @@
 2026-11-14 03:44:50.642: [INFO] BookmarksLoadDropped droppedNodes=0
 2026-11-14 03:44:50.642: [INFO] BookmarksSnapshot Startup total=0 bar=0 other=0 mobile=0 showBar=0 showBarNTP=1
 2026-11-14 03:54:34.646: [INFO] BookmarksSnapshot Shutdown total=0 bar=0 other=0 mobile=0 showBar=0 showBarNTP=1
+2026-11-14 15:31:12.607: [INFO] CurrentProfilePath: C:\Users\Danilo\Documents\FinTwin\.metadata\.plugins\org.eclipse.swt\EBWebView\Default
+2026-11-14 15:31:12.607: [INFO] Profiles total count: 1
+2026-11-14 15:31:12.607: [INFO] Profile: name=Perfil 1 path=C:\Users\Danilo\Documents\FinTwin\.metadata\.plugins\org.eclipse.swt\EBWebView\Default lastActive=2026-11-13T15:15:18.978Z
+2026-11-14 15:31:12.607: [INFO] LastUsedProfileDir: C:\Users\Danilo\Documents\FinTwin\.metadata\.plugins\org.eclipse.swt\EBWebView\Default
+2026-11-14 15:31:12.607: [INFO] MostRecentlyActiveProfile: name=Perfil 1 path=C:\Users\Danilo\Documents\FinTwin\.metadata\.plugins\org.eclipse.swt\EBWebView\Default lastActive=2026-11-13T15:15:18.978Z
+2026-11-14 15:31:12.607: [INFO] OnDoneLoading sync enabled: 0
+2026-11-14 15:31:12.607: [INFO] BookmarkModelLoaded, ids_reassigned: 0
+2026-11-14 15:31:12.607: [INFO] BookmarksLoadDropped droppedNodes=0
+2026-11-14 15:31:12.607: [INFO] BookmarksSnapshot Startup total=0 bar=0 other=0 mobile=0 showBar=0 showBarNTP=1
+2026-11-14 15:31:16.693: [INFO] BookmarksSnapshot Shutdown total=0 bar=0 other=0 mobile=0 showBar=0 showBarNTP=1

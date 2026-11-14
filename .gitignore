@@ -39,6 +39,7 @@ HELP.md
 
 ### Ambiente ###
 .env
+.metadata/
 
 ### Extensões do VS Code ###
 .github/modernize/
