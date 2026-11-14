@@ -1,0 +1,43 @@
+package FinTwin.EGR.demo.service;
+
+import FinTwin.EGR.demo.model.ContaBancaria;
+import FinTwin.EGR.demo.repository.ContaBancariaRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+/**
+ * UC06 – Sincronizar Contas Bancárias:
+ * Consolidação via Open Finance a cada 6 horas.
+ */
+@Service
+@RequiredArgsConstructor
+public class OpenFinanceSyncService {
+
+    private final ContaBancariaRepository contaBancariaRepository;
+
+    /**
+     * Job agendado para verificar contas pendentes de sincronização a cada hora (garantindo intervalo de 6h).
+     */
+    @Scheduled(fixedRate = 3600000) // a cada 1 hora
+    @Transactional
+    public void executarSincronizacaoPeriodica() {
+        LocalDateTime agora = LocalDateTime.now();
+        List<ContaBancaria> pendentes = contaBancariaRepository.findByDataProximaSincronizacaoBefore(agora);
+
+        for (ContaBancaria conta : pendentes) {
+            sincronizarConta(conta);
+        }
+    }
+
+    @Transactional
+    public void sincronizarConta(ContaBancaria conta) {
+        // Simulação da chamada ao provedor de Open Finance
+        conta.atualizarSincronizacaoOpenFinance();
+        contaBancariaRepository.save(conta);
+    }
+}
