@@ -10,6 +10,7 @@ import FinTwin.EGR.demo.model.Usuario;
 import FinTwin.EGR.demo.repository.UsuarioRepository;
 import FinTwin.EGR.demo.service.GemeoDigitalService;
 import FinTwin.EGR.demo.service.TesteEstresseService;
+import tools.jackson.databind.json.JsonMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,13 +30,16 @@ public class GemeoDigitalController {
     private final GemeoDigitalService gemeoDigitalService;
     private final TesteEstresseService testeEstresseService;
     private final UsuarioRepository usuarioRepository;
+    private final JsonMapper jsonMapper;
 
     public GemeoDigitalController(GemeoDigitalService gemeoDigitalService, 
                                   TesteEstresseService testeEstresseService, 
-                                  UsuarioRepository usuarioRepository) {
+                                  UsuarioRepository usuarioRepository,
+                                  JsonMapper jsonMapper) {
         this.gemeoDigitalService = gemeoDigitalService;
         this.testeEstresseService = testeEstresseService;
         this.usuarioRepository = usuarioRepository;
+        this.jsonMapper = jsonMapper;
     }
 
     @PostMapping("/gemeo-digital/{usuarioId}")
@@ -54,13 +58,13 @@ public class GemeoDigitalController {
                 dto.getInflacaoAnual()
         );
 
-        return ResponseEntity.ok(GemeoDigitalResponseDTO.fromEntity(gemeo));
+        return ResponseEntity.ok(GemeoDigitalResponseDTO.fromEntity(gemeo, jsonMapper));
     }
 
     @GetMapping("/gemeo-digital/{usuarioId}")
     public ResponseEntity<List<GemeoDigitalResponseDTO>> listarGemeos(@PathVariable Long usuarioId) {
         List<GemeoDigitalResponseDTO> lista = gemeoDigitalService.listarPorUsuario(usuarioId).stream()
-                .map(GemeoDigitalResponseDTO::fromEntity)
+                .map(gemeo -> GemeoDigitalResponseDTO.fromEntity(gemeo, jsonMapper))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(lista);
     }

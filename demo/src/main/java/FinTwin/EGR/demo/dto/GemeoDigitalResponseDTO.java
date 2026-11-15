@@ -1,9 +1,12 @@
 package FinTwin.EGR.demo.dto;
 
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 import FinTwin.EGR.demo.model.GemeoDigital;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class GemeoDigitalResponseDTO {
 
@@ -16,6 +19,7 @@ public class GemeoDigitalResponseDTO {
     private BigDecimal taxaRendimentoAnual;
     private BigDecimal inflacaoProjetadaAnual;
     private Long tempoProcessamentoMs;
+    private List<PontoProjecaoDTO> pontosProjecao;
     private LocalDateTime dataCriacao;
 
     public GemeoDigitalResponseDTO() {
@@ -24,7 +28,8 @@ public class GemeoDigitalResponseDTO {
     public GemeoDigitalResponseDTO(Long id, Long usuarioId, String nomeCenario, Integer horizonteAnos,
                                    BigDecimal patrimonioInicial, BigDecimal aporteMensalEstimado,
                                    BigDecimal taxaRendimentoAnual, BigDecimal inflacaoProjetadaAnual,
-                                   Long tempoProcessamentoMs, LocalDateTime dataCriacao) {
+                                   Long tempoProcessamentoMs, List<PontoProjecaoDTO> pontosProjecao,
+                                   LocalDateTime dataCriacao) {
         this.id = id;
         this.usuarioId = usuarioId;
         this.nomeCenario = nomeCenario;
@@ -34,14 +39,24 @@ public class GemeoDigitalResponseDTO {
         this.taxaRendimentoAnual = taxaRendimentoAnual;
         this.inflacaoProjetadaAnual = inflacaoProjetadaAnual;
         this.tempoProcessamentoMs = tempoProcessamentoMs;
+        this.pontosProjecao = pontosProjecao;
         this.dataCriacao = dataCriacao;
     }
 
-    public static GemeoDigitalResponseDTO fromEntity(GemeoDigital gemeo) {
+    public static GemeoDigitalResponseDTO fromEntity(GemeoDigital gemeo, JsonMapper jsonMapper) {
         if (gemeo == null) {
             return null;
         }
         Long uId = gemeo.getUsuario() != null ? gemeo.getUsuario().getId() : null;
+
+        List<PontoProjecaoDTO> pontosProjecao;
+        try {
+            pontosProjecao = gemeo.getResultadoProjecaoJson() == null
+                    ? List.of()
+                    : List.of(jsonMapper.readValue(gemeo.getResultadoProjecaoJson(), PontoProjecaoDTO[].class));
+        } catch (JacksonException e) {
+            throw new IllegalStateException("O resultado salvo da projeção está inválido.", e);
+        }
 
         return new GemeoDigitalResponseDTO(
                 gemeo.getId(),
@@ -53,6 +68,7 @@ public class GemeoDigitalResponseDTO {
                 gemeo.getTaxaRendimentoAnual(),
                 gemeo.getInflacaoProjetadaAnual(),
                 gemeo.getTempoProcessamentoMs(),
+                pontosProjecao,
                 gemeo.getDataCriacao()
         );
     }
@@ -127,6 +143,14 @@ public class GemeoDigitalResponseDTO {
 
     public void setTempoProcessamentoMs(Long tempoProcessamentoMs) {
         this.tempoProcessamentoMs = tempoProcessamentoMs;
+    }
+
+    public List<PontoProjecaoDTO> getPontosProjecao() {
+        return pontosProjecao;
+    }
+
+    public void setPontosProjecao(List<PontoProjecaoDTO> pontosProjecao) {
+        this.pontosProjecao = pontosProjecao;
     }
 
     public LocalDateTime getDataCriacao() {

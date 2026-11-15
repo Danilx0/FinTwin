@@ -1,18 +1,13 @@
 package FinTwin.EGR.demo.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "gemeos_digitais")
@@ -42,15 +37,13 @@ public class GemeoDigital extends BaseEntity {
 
     private Long tempoProcessamentoMs;
 
-    @OneToMany(mappedBy = "gemeoDigital", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("ano ASC")
-    private List<PontoProjecao> pontosProjecao = new ArrayList<>();
+    @Column(columnDefinition = "TEXT")
+    private String resultadoProjecaoJson;
 
     
     public GemeoDigital() {
         super();
         this.horizonteAnos = 35;
-        this.pontosProjecao = new ArrayList<>();
     }
 
     
@@ -72,11 +65,6 @@ public class GemeoDigital extends BaseEntity {
             this.horizonteAnos = Math.min(horizonteAnos, 35);
         }
         this.inflacaoProjetadaAnual = inflacaoProjetadaAnual;
-    }
-
-    public void adicionarPontoProjecao(PontoProjecao ponto) {
-        ponto.setGemeoDigital(this);
-        this.pontosProjecao.add(ponto);
     }
 
     public Usuario getUsuario() {
@@ -143,11 +131,11 @@ public class GemeoDigital extends BaseEntity {
         this.tempoProcessamentoMs = tempoProcessamentoMs;
     }
 
-    public List<PontoProjecao> getPontosProjecao() {
-        return pontosProjecao;
+    public String getResultadoProjecaoJson() {
+        return resultadoProjecaoJson;
     }
 
-    public void setPontosProjecao(List<PontoProjecao> pontosProjecao) {
-        this.pontosProjecao = pontosProjecao;
+    public void setResultadoProjecaoJson(String resultadoProjecaoJson) {
+        this.resultadoProjecaoJson = resultadoProjecaoJson;
     }
 }
