@@ -17,25 +17,6 @@ public class SegurancaLgpdService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    
-    public boolean validarCodigoTotp(Usuario usuario, String codigoTotp) {
-        long inicio = System.currentTimeMillis();
-
-        if (!Boolean.TRUE.equals(usuario.getDoisFatoresAtivo())) {
-            return true;
-        }
-
-        boolean valido = codigoTotp != null && codigoTotp.length() == 6;
-
-        long tempoRespostaMs = System.currentTimeMillis() - inicio;
-        if (tempoRespostaMs > 300) {
-            System.err.println("ALERTA: Validação 2FA excedeu o tempo máximo de 300 ms: " + tempoRespostaMs + " ms");
-        }
-
-        return valido;
-    }
-
-    
     @Transactional
     public void registrarPedidoEsquecimento(Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)

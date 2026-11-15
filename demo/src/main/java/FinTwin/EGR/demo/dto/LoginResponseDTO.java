@@ -5,6 +5,7 @@ public class LoginResponseDTO {
     private String token;
     private String tipo;
     private UsuarioResponseDTO usuario;
+    private boolean twoFactorRequired;
 
     public LoginResponseDTO() {
         this.tipo = "Bearer";
@@ -14,6 +15,12 @@ public class LoginResponseDTO {
         this.token = token;
         this.tipo = "Bearer";
         this.usuario = usuario;
+    }
+
+    public LoginResponseDTO(boolean twoFactorRequired, UsuarioResponseDTO usuario) {
+        this.tipo = "Bearer";
+        this.usuario = usuario;
+        this.twoFactorRequired = twoFactorRequired;
     }
 
     public String getToken() {
@@ -38,5 +45,13 @@ public class LoginResponseDTO {
 
     public void setUsuario(UsuarioResponseDTO usuario) {
         this.usuario = usuario;
+    }
+
+    public boolean isTwoFactorRequired() {
+        return twoFactorRequired;
+    }
+
+    public void setTwoFactorRequired(boolean twoFactorRequired) {
+        this.twoFactorRequired = twoFactorRequired;
     }
 }
