@@ -48,7 +48,9 @@ public class JwtFilter extends OncePerRequestFilter {
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
 
-                if (usuarioOpt.isPresent() && jwtService.validarToken(token, email)) {
+                if (usuarioOpt.isPresent()
+                        && !Boolean.TRUE.equals(usuarioOpt.get().getSolicitouEsquecimento())
+                        && jwtService.validarToken(token, email)) {
                     Usuario usuario = usuarioOpt.get();
                     SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + usuario.getTipoUsuario().name());
 
