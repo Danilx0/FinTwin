@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -155,9 +154,22 @@ public class TransacaoController {
         return ResponseEntity.ok(TravaImpulsoResponseDTO.fromEntity(trava));
     }
 
+    @GetMapping("/trava-impulso/{usuarioId}")
+    public ResponseEntity<List<TravaImpulsoResponseDTO>> listarTravas(@PathVariable Long usuarioId,
+                                                                      @AuthenticationPrincipal Usuario usuarioAutenticado) {
+        if (!usuarioAutorizado(usuarioId, usuarioAutenticado)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        List<TravaImpulsoResponseDTO> travas = travaImpulsoService.listarPorUsuario(usuarioId).stream()
+                .map(TravaImpulsoResponseDTO::fromEntity)
+                .toList();
+        return ResponseEntity.ok(travas);
+    }
+
+    /** Confirma a compra depois das 24h; a despesa e registrada automaticamente. */
     @PutMapping("/trava-impulso/{travaId}/liberar")
-    public ResponseEntity<?> liberarTrava(@PathVariable Long travaId,
-                                          @AuthenticationPrincipal Usuario usuarioAutenticado) {
+    public ResponseEntity<TravaImpulsoResponseDTO> liberarTrava(@PathVariable Long travaId,
+                                                                @AuthenticationPrincipal Usuario usuarioAutenticado) {
         TravaImpulso existente = travaImpulsoRepository.findById(travaId).orElse(null);
         if (existente == null) {
             return ResponseEntity.notFound().build();
@@ -165,12 +177,21 @@ public class TransacaoController {
         if (!usuarioAutorizado(existente.getUsuario().getId(), usuarioAutenticado)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        try {
-            TravaImpulso trava = travaImpulsoService.liberarGasto(travaId);
-            return ResponseEntity.ok(TravaImpulsoResponseDTO.fromEntity(trava));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(Map.of("erro", e.getMessage()));
+        return ResponseEntity.ok(TravaImpulsoResponseDTO.fromEntity(travaImpulsoService.liberarGasto(travaId)));
+    }
+
+    /** Desiste da compra durante a quarentena. */
+    @PutMapping("/trava-impulso/{travaId}/cancelar")
+    public ResponseEntity<TravaImpulsoResponseDTO> cancelarTrava(@PathVariable Long travaId,
+                                                                 @AuthenticationPrincipal Usuario usuarioAutenticado) {
+        TravaImpulso existente = travaImpulsoRepository.findById(travaId).orElse(null);
+        if (existente == null) {
+            return ResponseEntity.notFound().build();
         }
+        if (!usuarioAutorizado(existente.getUsuario().getId(), usuarioAutenticado)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.ok(TravaImpulsoResponseDTO.fromEntity(travaImpulsoService.cancelarGasto(travaId)));
     }
 
     @PostMapping("/relatorios/exportar/{usuarioId}")

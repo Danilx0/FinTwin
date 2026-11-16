@@ -46,6 +46,17 @@ public class PaginaController {
         return "fintwin-impulso";
     }
 
+    @GetMapping("/perfil")
+    public String perfil() {
+        return "fintwin-perfil";
+    }
+
+    /** Pre-visualizacao do perfil Familiar: so a tela, com dados de exemplo. */
+    @GetMapping("/familia")
+    public String familia() {
+        return "fintwin-familia";
+    }
+
     @GetMapping("/relatorios")
     public String relatorios() {
         return "fintwin-relatorios";

@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @Table(name = "usuarios")
 public class Usuario extends BaseEntity {
 
+    public static final String FUSO_HORARIO_PADRAO = "America/Sao_Paulo";
+
     @Column(nullable = false, length = 100)
     private String nome;
 
@@ -22,7 +24,13 @@ public class Usuario extends BaseEntity {
     @Column(nullable = false)
     private String senha;
 
-    private String fotoPerfilUrl;
+    private LocalDateTime fotoAtualizadaEm;
+
+    @Column(length = 20)
+    private String telefone;
+
+    @Column(nullable = false, length = 50)
+    private String fusoHorario = FUSO_HORARIO_PADRAO;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
@@ -47,6 +55,7 @@ public class Usuario extends BaseEntity {
         super();
         this.doisFatoresAtivo = false;
         this.solicitouEsquecimento = false;
+        this.fusoHorario = FUSO_HORARIO_PADRAO;
     }
 
     
@@ -56,13 +65,6 @@ public class Usuario extends BaseEntity {
         this.email = email;
         this.senha = senha;
         this.tipoUsuario = tipoUsuario;
-    }
-
-    
-    public Usuario(String nome, String email, String senha, String fotoPerfilUrl, TipoUsuario tipoUsuario, Boolean doisFatoresAtivo) {
-        this(nome, email, senha, tipoUsuario);
-        this.fotoPerfilUrl = fotoPerfilUrl;
-        this.doisFatoresAtivo = doisFatoresAtivo != null ? doisFatoresAtivo : false;
     }
 
     public void solicitarDireitoAoEsquecimento() {
@@ -95,12 +97,28 @@ public class Usuario extends BaseEntity {
         this.senha = senha;
     }
 
-    public String getFotoPerfilUrl() {
-        return fotoPerfilUrl;
+    public LocalDateTime getFotoAtualizadaEm() {
+        return fotoAtualizadaEm;
     }
 
-    public void setFotoPerfilUrl(String fotoPerfilUrl) {
-        this.fotoPerfilUrl = fotoPerfilUrl;
+    public void setFotoAtualizadaEm(LocalDateTime fotoAtualizadaEm) {
+        this.fotoAtualizadaEm = fotoAtualizadaEm;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public String getFusoHorario() {
+        return fusoHorario;
+    }
+
+    public void setFusoHorario(String fusoHorario) {
+        this.fusoHorario = fusoHorario;
     }
 
     public TipoUsuario getTipoUsuario() {

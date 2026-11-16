@@ -4,6 +4,7 @@ import FinTwin.EGR.demo.model.Usuario;
 import FinTwin.EGR.demo.model.enums.TipoUsuario;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class UsuarioResponseDTO {
 
@@ -11,6 +12,8 @@ public class UsuarioResponseDTO {
     private String nome;
     private String email;
     private String fotoPerfilUrl;
+    private String telefone;
+    private String fusoHorario;
     private TipoUsuario tipoUsuario;
     private Boolean doisFatoresAtivo;
     private LocalDateTime dataCriacao;
@@ -33,15 +36,43 @@ public class UsuarioResponseDTO {
         if (usuario == null) {
             return null;
         }
-        return new UsuarioResponseDTO(
+        UsuarioResponseDTO dto = new UsuarioResponseDTO(
                 usuario.getId(),
                 usuario.getNome(),
                 usuario.getEmail(),
-                usuario.getFotoPerfilUrl(),
+                urlDaFoto(usuario),
                 usuario.getTipoUsuario(),
                 usuario.getDoisFatoresAtivo(),
                 usuario.getDataCriacao()
         );
+        dto.setTelefone(usuario.getTelefone());
+        dto.setFusoHorario(usuario.getFusoHorario());
+        return dto;
+    }
+
+    /** Endereco da foto com a versao na URL, para o navegador poder guardar em cache com seguranca. */
+    private static String urlDaFoto(Usuario usuario) {
+        if (usuario.getFotoAtualizadaEm() == null || usuario.getId() == null) {
+            return null;
+        }
+        long versao = usuario.getFotoAtualizadaEm().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        return "/api/usuarios/" + usuario.getId() + "/foto?v=" + versao;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public String getFusoHorario() {
+        return fusoHorario;
+    }
+
+    public void setFusoHorario(String fusoHorario) {
+        this.fusoHorario = fusoHorario;
     }
 
     public Long getId() {
