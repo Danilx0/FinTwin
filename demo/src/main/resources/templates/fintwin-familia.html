@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FinTwin — Família</title>
+<link rel="stylesheet" th:href="@{/css/base.css}">
+<link rel="stylesheet" th:href="@{/css/layout.css}">
+<link rel="stylesheet" th:href="@{/css/components.css}">
+<link rel="stylesheet" th:href="@{/css/familia.css}">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <nav th:replace="~{fragments/app-shell :: sidebar('familia')}"></nav>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar__lead">
+        <h1 class="topbar__title">Família</h1>
+        <p class="topbar__subtitle">Finanças do grupo familiar</p>
+      </div>
+      <div class="topbar__actions">
+        <div class="visao" role="group" aria-label="Ver a página como">
+          <span class="visao__rotulo" aria-hidden="true">Ver como</span>
+          <button class="visao__opcao" type="button" data-visao="responsavel" aria-pressed="true">Responsável</button>
+          <button class="visao__opcao" type="button" data-visao="membro" aria-pressed="false">Membro</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="content familia" id="familia" data-visao="responsavel">
+
+      <div class="familia-aviso" role="note">
+        <svg width="16" height="16" fill="none" viewBox="0 0 16 16" aria-hidden="true">
+          <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M8 7.5v3.5M8 5h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <p>
+          <strong>Pré-visualização do perfil Familiar.</strong>
+          Os valores e membros abaixo são de exemplo e nenhuma ação é salva.
+          <span id="familia-aviso-tipo"></span>
+        </p>
+      </div>
+
+      <section class="stat-strip familia-resumo" aria-label="Resumo do grupo">
+        <div class="stat">
+          <div class="stat__label">Saldo do grupo</div>
+          <div class="stat__value">R$ 18.430,00</div>
+          <div class="stat__note">3 contas, 2 membros com conta</div>
+        </div>
+        <div class="stat">
+          <div class="stat__label">Receitas no mês</div>
+          <div class="stat__value stat__value--positive">R$ 12.900,00</div>
+          <div class="stat__note">Salários e renda extra</div>
+        </div>
+        <div class="stat">
+          <div class="stat__label">Despesas no mês</div>
+          <div class="stat__value stat__value--negative">R$ 7.865,00</div>
+          <div class="stat__note">61% da receita</div>
+        </div>
+        <div class="stat">
+          <div class="stat__label">Meta comum</div>
+          <div class="stat__value">64%</div>
+          <div class="stat__note">Viagem de férias</div>
+        </div>
+      </section>
+
+      <div class="familia-grade">
+
+        <section class="card familia-membros" aria-labelledby="membros-titulo">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title" id="membros-titulo">Membros</h2>
+              <p class="card-subtitle">4 pessoas no grupo</p>
+            </div>
+            <button class="btn-sm" type="button" data-so="responsavel" data-demo="Convite não enviado: esta tela é só uma pré-visualização.">Convidar membro</button>
+          </div>
+
+          <ul class="membros" role="list">
+            <li class="membro">
+              <span class="membro__avatar membro__avatar--1" data-familia-avatar>VC</span>
+              <div class="membro__info">
+                <span class="membro__nome"><span data-familia-nome>Você</span> <span class="membro__voce" data-so="responsavel">você</span></span>
+                <span class="membro__detalhe">Conta corrente e poupança</span>
+              </div>
+              <span class="tag tag--responsavel">Responsável</span>
+              <span class="membro__gasto">
+                <span data-so="responsavel">R$ 3.120,00</span>
+                <span class="membro__oculto" data-so="membro" aria-label="Valor oculto">•••</span>
+              </span>
+            </li>
+            <li class="membro">
+              <span class="membro__avatar membro__avatar--2">MS</span>
+              <div class="membro__info">
+                <span class="membro__nome">Marina Souza</span>
+                <span class="membro__detalhe">Conta corrente</span>
+              </div>
+              <span class="tag tag--responsavel">Responsável</span>
+              <span class="membro__gasto">
+                <span data-so="responsavel">R$ 2.960,00</span>
+                <span class="membro__oculto" data-so="membro" aria-label="Valor oculto">•••</span>
+              </span>
+            </li>
+            <li class="membro">
+              <span class="membro__avatar membro__avatar--3">LS</span>
+              <div class="membro__info">
+                <span class="membro__nome">Lucas Souza <span class="membro__voce" data-so="membro">você</span></span>
+                <span class="membro__detalhe">Mesada de R$ 400,00</span>
+              </div>
+              <span class="tag">Membro</span>
+              <span class="membro__gasto">R$ 1.185,00</span>
+            </li>
+            <li class="membro membro--pendente">
+              <span class="membro__avatar membro__avatar--4">BS</span>
+              <div class="membro__info">
+                <span class="membro__nome">Beatriz Souza</span>
+                <span class="membro__detalhe">Convite enviado há 2 dias</span>
+              </div>
+              <span class="tag tag--pendente">Convite pendente</span>
+              <span class="membro__gasto membro__gasto--vazio">—</span>
+            </li>
+          </ul>
+          <p class="familia-nota" data-so="membro">Na visão de membro você é o Lucas. Membros veem os próprios gastos e as metas comuns. Os valores dos outros membros ficam ocultos.</p>
+        </section>
+
+        <section class="card" aria-labelledby="meta-titulo">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title" id="meta-titulo">Meta compartilhada</h2>
+              <p class="card-subtitle">Viagem de férias · até julho</p>
+            </div>
+            <span class="badge badge--cyan">64%</span>
+          </div>
+
+          <div class="meta-valor">
+            <strong>R$ 9.600,00</strong>
+            <span>de R$ 15.000,00</span>
+          </div>
+          <div class="meta-barra" role="img" aria-label="Contribuições: você 45%, Marina 40%, Lucas 15% do valor juntado">
+            <span class="meta-barra__parte meta-barra__parte--1" style="width: 28.8%"></span>
+            <span class="meta-barra__parte meta-barra__parte--2" style="width: 25.6%"></span>
+            <span class="meta-barra__parte meta-barra__parte--3" style="width: 9.6%"></span>
+          </div>
+          <ul class="legenda" role="list">
+            <li><span class="legenda__cor legenda__cor--1"></span><span data-familia-primeiro-nome>Você</span><strong>R$ 4.320,00</strong></li>
+            <li><span class="legenda__cor legenda__cor--2"></span>Marina<strong>R$ 3.840,00</strong></li>
+            <li><span class="legenda__cor legenda__cor--3"></span>Lucas<strong>R$ 1.440,00</strong></li>
+          </ul>
+          <p class="familia-nota">Faltam R$ 5.400,00. Guardando R$ 1.080,00 por mês, a meta é atingida em julho.</p>
+        </section>
+
+        <section class="card" aria-labelledby="gastos-titulo">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title" id="gastos-titulo">Despesas do grupo por categoria</h2>
+              <p class="card-subtitle">Mês atual</p>
+            </div>
+          </div>
+          <ul class="categorias" role="list">
+            <li class="categoria">
+              <div class="categoria__topo"><span>Moradia</span><strong>R$ 2.900,00</strong></div>
+              <div class="categoria__barra"><span style="width: 100%"></span></div>
+            </li>
+            <li class="categoria">
+              <div class="categoria__topo"><span>Alimentação</span><strong>R$ 1.840,00</strong></div>
+              <div class="categoria__barra"><span style="width: 63%"></span></div>
+            </li>
+            <li class="categoria">
+              <div class="categoria__topo"><span>Educação</span><strong>R$ 1.250,00</strong></div>
+              <div class="categoria__barra"><span style="width: 43%"></span></div>
+            </li>
+            <li class="categoria">
+              <div class="categoria__topo"><span>Transporte</span><strong>R$ 980,00</strong></div>
+              <div class="categoria__barra"><span style="width: 34%"></span></div>
+            </li>
+            <li class="categoria">
+              <div class="categoria__topo"><span>Lazer</span><strong>R$ 895,00</strong></div>
+              <div class="categoria__barra"><span style="width: 31%"></span></div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="card" aria-labelledby="aprovacao-titulo">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title" id="aprovacao-titulo">Trava de Impulso do grupo</h2>
+              <p class="card-subtitle" data-so="responsavel">Compras de membros acima de R$ 200,00 pedem sua aprovação</p>
+              <p class="card-subtitle" data-so="membro">Suas compras acima de R$ 200,00 pedem aprovação de um responsável</p>
+            </div>
+          </div>
+
+          <ul class="aprovacoes" role="list">
+            <li class="aprovacao" data-so="responsavel">
+              <div class="aprovacao__info">
+                <span class="aprovacao__item">Tênis de corrida</span>
+                <span class="aprovacao__detalhe">Lucas · quarentena termina em 6h</span>
+              </div>
+              <span class="aprovacao__valor">R$ 459,90</span>
+              <div class="aprovacao__acoes">
+                <button class="btn-sm" type="button" data-demo="Compra aprovada (pré-visualização, nada foi salvo).">Aprovar</button>
+                <button class="btn-sm btn-sm--perigo" type="button" data-demo="Compra recusada (pré-visualização, nada foi salvo).">Recusar</button>
+              </div>
+            </li>
+            <li class="aprovacao" data-so="responsavel">
+              <div class="aprovacao__info">
+                <span class="aprovacao__item">Videogame portátil</span>
+                <span class="aprovacao__detalhe">Lucas · liberada para decisão</span>
+              </div>
+              <span class="aprovacao__valor">R$ 1.899,00</span>
+              <div class="aprovacao__acoes">
+                <button class="btn-sm" type="button" data-demo="Compra aprovada (pré-visualização, nada foi salvo).">Aprovar</button>
+                <button class="btn-sm btn-sm--perigo" type="button" data-demo="Compra recusada (pré-visualização, nada foi salvo).">Recusar</button>
+              </div>
+            </li>
+            <li class="aprovacao" data-so="membro">
+              <div class="aprovacao__info">
+                <span class="aprovacao__item">Fone sem fio</span>
+                <span class="aprovacao__detalhe">Aguardando aprovação de um responsável</span>
+              </div>
+              <span class="aprovacao__valor">R$ 349,00</span>
+              <span class="tag tag--pendente">Em espera</span>
+            </li>
+          </ul>
+        </section>
+
+        <section class="card familia-permissoes" aria-labelledby="permissoes-titulo">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title" id="permissoes-titulo">O que cada papel pode fazer</h2>
+              <p class="card-subtitle" data-so="responsavel">Responsáveis ajustam as permissões dos membros</p>
+              <p class="card-subtitle" data-so="membro">Só um responsável pode mudar estas permissões</p>
+            </div>
+          </div>
+          <div class="data-table-wrap">
+            <table class="data-table permissoes">
+              <thead>
+                <tr>
+                  <th scope="col">Permissão</th>
+                  <th scope="col" class="permissoes__papel">Responsável</th>
+                  <th scope="col" class="permissoes__papel">Membro</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Ver saldo e despesas de todo o grupo</th>
+                  <td class="permissoes__papel"><span class="permissao permissao--sim" aria-label="Sim">✓</span></td>
+                  <td class="permissoes__papel"><label class="toggle"><input type="checkbox" aria-label="Membros veem saldo e despesas de todo o grupo" data-so-edita><span class="toggle__track"></span><span class="toggle__thumb"></span></label></td>
+                </tr>
+                <tr>
+                  <th scope="row">Lançar transações na conta do grupo</th>
+                  <td class="permissoes__papel"><span class="permissao permissao--sim" aria-label="Sim">✓</span></td>
+                  <td class="permissoes__papel"><label class="toggle"><input type="checkbox" checked aria-label="Membros lançam transações na conta do grupo" data-so-edita><span class="toggle__track"></span><span class="toggle__thumb"></span></label></td>
+                </tr>
+                <tr>
+                  <th scope="row">Contribuir para metas comuns</th>
+                  <td class="permissoes__papel"><span class="permissao permissao--sim" aria-label="Sim">✓</span></td>
+                  <td class="permissoes__papel"><label class="toggle"><input type="checkbox" checked aria-label="Membros contribuem para metas comuns" data-so-edita><span class="toggle__track"></span><span class="toggle__thumb"></span></label></td>
+                </tr>
+                <tr>
+                  <th scope="row">Aprovar compras da Trava de Impulso</th>
+                  <td class="permissoes__papel"><span class="permissao permissao--sim" aria-label="Sim">✓</span></td>
+                  <td class="permissoes__papel"><span class="permissao" aria-label="Não">—</span></td>
+                </tr>
+                <tr>
+                  <th scope="row">Convidar e remover membros</th>
+                  <td class="permissoes__papel"><span class="permissao permissao--sim" aria-label="Sim">✓</span></td>
+                  <td class="permissoes__papel"><span class="permissao" aria-label="Não">—</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+
+      <p class="familia-toast" id="familia-toast" role="status" aria-live="polite"></p>
+    </main>
+  </div>
+</div>
+
+<script th:src="@{/js/app-common.js}" defer></script>
+<script th:src="@{/js/familia.js}" defer></script>
+</body>
+</html>

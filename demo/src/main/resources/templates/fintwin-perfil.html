@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FinTwin — Perfil</title>
+<link rel="stylesheet" th:href="@{/css/base.css}">
+<link rel="stylesheet" th:href="@{/css/layout.css}">
+<link rel="stylesheet" th:href="@{/css/components.css}">
+<link rel="stylesheet" th:href="@{/css/perfil.css}">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <nav th:replace="~{fragments/app-shell :: sidebar('perfil')}"></nav>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar__lead">
+        <h1 class="topbar__title">Perfil e Segurança</h1>
+        <p class="topbar__subtitle">Dados cadastrais, verificação em duas etapas e privacidade</p>
+      </div>
+    </header>
+
+    <main class="content content--cheia">
+      <div class="card perfil-config">
+
+        <div class="perfil-abas" role="tablist" aria-orientation="vertical" aria-label="Configurações da conta">
+          <button class="perfil-aba" type="button" role="tab" id="aba-dados" data-aba="dados" aria-controls="painel-dados" aria-selected="true">
+            <svg class="perfil-aba__icone" width="16" height="16" fill="none" viewBox="0 0 16 16" aria-hidden="true">
+              <circle cx="8" cy="5.5" r="2.75" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M2.75 14c.6-2.6 2.7-4.25 5.25-4.25s4.65 1.65 5.25 4.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <span class="perfil-aba__texto">
+              <span class="perfil-aba__rotulo">Dados do perfil</span>
+              <span class="perfil-aba__dica">Foto, nome, telefone e fuso</span>
+            </span>
+          </button>
+          <button class="perfil-aba" type="button" role="tab" id="aba-seguranca" data-aba="seguranca" aria-controls="painel-seguranca" aria-selected="false" tabindex="-1">
+            <svg class="perfil-aba__icone" width="16" height="16" fill="none" viewBox="0 0 16 16" aria-hidden="true">
+              <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <span class="perfil-aba__texto">
+              <span class="perfil-aba__rotulo">Verificação em duas etapas</span>
+              <span class="perfil-aba__dica">Código do autenticador</span>
+            </span>
+          </button>
+          <button class="perfil-aba perfil-aba--perigo" type="button" role="tab" id="aba-excluir" data-aba="excluir" aria-controls="painel-excluir" aria-selected="false" tabindex="-1">
+            <svg class="perfil-aba__icone" width="16" height="16" fill="none" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.6a1 1 0 001 .9h3.8a1 1 0 001-.9l.6-8.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="perfil-aba__texto">
+              <span class="perfil-aba__rotulo">Excluir conta</span>
+              <span class="perfil-aba__dica">Direito ao esquecimento</span>
+            </span>
+          </button>
+        </div>
+
+        <section class="perfil-painel" role="tabpanel" id="painel-dados" aria-labelledby="aba-dados" tabindex="0">
+          <header class="perfil-painel__cabecalho">
+            <h2 class="perfil-painel__titulo">Dados do perfil</h2>
+            <p class="perfil-painel__subtitulo" id="perfil-email">Carregando...</p>
+          </header>
+
+          <div class="perfil-foto" id="perfil-foto">
+            <button class="perfil-foto__avatar" type="button" id="foto-escolher-avatar" aria-label="Alterar foto de perfil">
+              <span class="perfil-avatar__imagem" id="perfil-avatar">FT</span>
+              <span class="perfil-foto__camera" aria-hidden="true">
+                <svg width="20" height="20" fill="none" viewBox="0 0 20 20">
+                  <path d="M3 7.5A1.5 1.5 0 014.5 6h1.8l1.2-1.8h5l1.2 1.8h1.8A1.5 1.5 0 0117 7.5v7a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 013 14.5v-7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                  <circle cx="10" cy="11" r="2.75" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+              </span>
+            </button>
+
+            <div class="perfil-foto__info">
+              <strong id="perfil-nome-exibicao">—</strong>
+              <span class="perfil-avatar__tipo" id="perfil-tipo">—</span>
+              <div class="perfil-foto__acoes">
+                <button class="btn-sm" type="button" id="foto-escolher">Enviar foto</button>
+                <button class="btn-sm btn-sm--perigo" type="button" id="foto-remover" hidden>Remover</button>
+              </div>
+              <span class="field__hint">JPG, PNG ou WebP. Arraste a imagem até aqui ou clique na foto. Ela é recortada em quadrado.</span>
+              <p class="feedback perfil-foto__feedback" id="foto-feedback" role="status" aria-live="polite"></p>
+            </div>
+
+            <input class="perfil-foto__arquivo" type="file" id="foto-arquivo" accept="image/jpeg,image/png,image/webp" tabindex="-1" aria-hidden="true">
+          </div>
+
+          <form id="perfil-form" novalidate>
+            <div class="perfil-campos">
+              <div class="field">
+                <label for="nome">Nome</label>
+                <input id="nome" name="nome" maxlength="100" autocomplete="name" required>
+              </div>
+              <div class="field">
+                <label for="telefone">Telefone</label>
+                <input id="telefone" name="telefone" type="tel" maxlength="20" autocomplete="tel" placeholder="(71) 99999-0000"
+                       pattern="\+?[0-9 ()\-]{8,20}">
+              </div>
+              <div class="field">
+                <label for="fusoHorario">Fuso horário</label>
+                <select id="fusoHorario" name="fusoHorario" required></select>
+              </div>
+            </div>
+
+            <div class="perfil-painel__rodape">
+              <p class="feedback" id="perfil-feedback" role="status" aria-live="polite"></p>
+              <button class="btn-primary perfil-botao" type="submit">Salvar alterações</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="perfil-painel" role="tabpanel" id="painel-seguranca" aria-labelledby="aba-seguranca" tabindex="0" hidden>
+          <header class="perfil-painel__cabecalho perfil-painel__cabecalho--status">
+            <div>
+              <h2 class="perfil-painel__titulo">Verificação em duas etapas</h2>
+              <p class="perfil-painel__subtitulo">Código de 6 dígitos de um aplicativo autenticador a cada login</p>
+            </div>
+            <span class="badge" id="twofa-status">—</span>
+          </header>
+
+          <div id="twofa-inativo" hidden>
+            <p class="perfil-texto">Use Google Authenticator, Microsoft Authenticator ou similar. Depois de ativado, o login pede o código do aplicativo.</p>
+            <button class="btn-secondary perfil-botao" type="button" id="twofa-iniciar">Configurar 2FA</button>
+          </div>
+
+          <div id="twofa-configuracao" hidden>
+            <ol class="perfil-passos">
+              <li>Escaneie o QR Code no aplicativo autenticador.</li>
+              <li>Digite o código de 6 dígitos que aparecer para confirmar.</li>
+            </ol>
+            <div class="twofa-setup">
+              <img class="twofa-setup__qr" id="twofa-qr" alt="QR Code para configurar o aplicativo autenticador" width="180" height="180">
+              <div class="twofa-setup__manual">
+                <span class="field__hint">Sem câmera? Digite esta chave no aplicativo:</span>
+                <code class="twofa-setup__chave" id="twofa-segredo"></code>
+              </div>
+            </div>
+            <form id="twofa-ativar-form" class="twofa-codigo" novalidate>
+              <div class="field">
+                <label for="codigo-ativar">Código do aplicativo</label>
+                <input id="codigo-ativar" name="codigoTotp" inputmode="numeric" autocomplete="one-time-code" pattern="\d{6}" maxlength="6" placeholder="000000" required>
+              </div>
+              <button class="btn-primary" type="submit">Ativar 2FA</button>
+            </form>
+          </div>
+
+          <form id="twofa-desativar-form" class="twofa-codigo" hidden novalidate>
+            <div class="field">
+              <label for="codigo-desativar">Para desativar, informe um código atual</label>
+              <input id="codigo-desativar" name="codigoTotp" inputmode="numeric" autocomplete="one-time-code" pattern="\d{6}" maxlength="6" placeholder="000000" required>
+            </div>
+            <button class="btn-secondary" type="submit">Desativar 2FA</button>
+          </form>
+
+          <p class="feedback" id="twofa-feedback" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="perfil-painel" role="tabpanel" id="painel-excluir" aria-labelledby="aba-excluir" tabindex="0" hidden>
+          <header class="perfil-painel__cabecalho">
+            <h2 class="perfil-painel__titulo">Excluir conta</h2>
+            <p class="perfil-painel__subtitulo">Direito ao esquecimento (LGPD)</p>
+          </header>
+
+          <div class="perfil-aviso" role="note">
+            <strong>Esta ação não pode ser desfeita.</strong>
+            O acesso é bloqueado na hora e, em até 24 horas, todos os seus dados são apagados: contas, transações, simulações, travas e relatórios.
+          </div>
+
+          <form id="lgpd-form" novalidate>
+            <div class="field perfil-campo-curto">
+              <label for="lgpd-confirmacao">Para confirmar, digite EXCLUIR</label>
+              <input id="lgpd-confirmacao" autocomplete="off" required>
+            </div>
+            <div class="perfil-painel__rodape">
+              <p class="feedback" id="lgpd-feedback" role="status" aria-live="polite"></p>
+              <button class="btn-perigo perfil-botao" type="submit">Solicitar exclusão da conta</button>
+            </div>
+          </form>
+        </section>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script th:src="@{/js/app-common.js}" defer></script>
+<script th:src="@{/js/perfil.js}" defer></script>
+</body>
+</html>

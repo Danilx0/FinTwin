@@ -184,6 +184,30 @@
   font-weight: 500;
 }
 
+.quarantine--decidida {
+  opacity: 0.7;
+}
+
+.quarantine--decidida .ring__progress {
+  stroke: var(--text-muted);
+}
+
+.quarantine--decidida .quarantine__value {
+  color: var(--text-secondary);
+}
+
+.quarantine__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.quarantine__actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 @media (max-width: 480px) {
   .quarantine {
     grid-template-columns: 72px minmax(0, 1fr);

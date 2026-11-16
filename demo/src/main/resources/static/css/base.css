@@ -161,6 +161,15 @@ svg {
 
 .btn-sm:hover { background: rgba(61, 241, 255, 0.07); }
 
+.btn-sm--perigo {
+  color: var(--negative);
+  border-color: rgba(255, 107, 122, 0.4);
+}
+
+.btn-sm--perigo:hover {
+  background: rgba(255, 107, 122, 0.08);
+}
+
 .btn-icon {
   width: 36px;
   height: 36px;
@@ -399,4 +408,9 @@ svg {
 
 @media (max-width: 768px) {
   :root { --nav-width: 0px; }
+}
+
+/* O atributo hidden precisa vencer regras como display: flex dos componentes. */
+[hidden] {
+  display: none !important;
 }

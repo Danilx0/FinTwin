@@ -143,6 +143,11 @@
   flex-shrink: 0;
 }
 
+.user-chip__avatar {
+  background-size: cover;
+  background-position: center;
+}
+
 .user-chip__info { flex: 1; min-width: 0; }
 
 .user-chip__name {
@@ -214,56 +219,137 @@
   outline-offset: 2px;
 }
 
-@media (max-width: 768px) {
-  .app-shell {
-    flex-direction: column;
-  }
+/* ---------- Estrutura comum ao desktop e ao celular ---------- */
+.nav-shell { display: contents; }
 
-  .sidebar {
+.sidebar__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.sidebar__top .sidebar__brand { margin-bottom: 0; }
+
+.mobile-bar,
+.sidebar__fechar,
+.sidebar-backdrop { display: none; }
+
+.mobile-bar__menu,
+.sidebar__fechar {
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.mobile-bar__menu:hover,
+.sidebar__fechar:hover {
+  background: rgba(61, 241, 255, 0.06);
+  border-color: var(--border-hover);
+}
+
+.mobile-bar__menu:focus-visible,
+.sidebar__fechar:focus-visible,
+.mobile-bar__brand:focus-visible,
+.mobile-bar__perfil:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+/* ---------- Telas largas: conteúdo mais respirado ---------- */
+@media (min-width: 1600px) {
+  .content { padding: 40px 48px; }
+  .topbar  { padding: 22px 48px; }
+}
+
+/* ---------- Tablet e celular: barra superior + menu deslizante ---------- */
+@media (max-width: 900px) {
+  .app-shell { flex-direction: column; }
+
+  .mobile-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     position: sticky;
     top: 0;
-    width: 100%;
-    min-height: 0;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
-    padding: 10px 12px;
-    border-right: none;
+    z-index: 90;
+    padding: 10px 16px;
+    padding-top: max(10px, env(safe-area-inset-top));
+    background: rgba(9, 15, 28, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
   }
 
-  .sidebar::-webkit-scrollbar { display: none; }
+  .mobile-bar__menu { display: inline-grid; }
 
-  .sidebar__brand {
-    margin: 0 6px 0 0;
-    padding: 4px;
-    flex-shrink: 0;
-  }
-
-  .sidebar__brand-name,
-  .nav-section__label,
-  .nav-item__badge,
-  .sidebar__footer {
-    display: none;
-  }
-
-  .nav-section {
+  .mobile-bar__brand {
     display: flex;
-    gap: 4px;
-    margin: 0;
-    flex-shrink: 0;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    margin-right: auto;
   }
 
-  .nav-item {
-    margin: 0;
-    padding: 8px 10px;
-    white-space: nowrap;
+  .mobile-bar__brand .sidebar__logo { width: 32px; height: 32px; font-size: 12px; }
+  .mobile-bar__brand .sidebar__brand-name { font-size: 16px; }
+
+  .mobile-bar__perfil { border-radius: 50%; text-decoration: none; }
+
+  .sidebar {
+    width: min(300px, 86vw);
+    min-height: 0;
+    padding: 20px 16px;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 0.25s ease, visibility 0s linear 0.25s;
+    box-shadow: none;
   }
 
-  .main    { margin-left: 0; }
+  .sidebar--aberta {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 0.25s ease, visibility 0s;
+    box-shadow: 12px 0 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .sidebar__top { margin-bottom: 24px; }
+  .sidebar__fechar { display: inline-grid; }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 95;
+    background: rgba(3, 6, 12, 0.6);
+    backdrop-filter: blur(2px);
+  }
+
+  .sidebar { z-index: 100; }
+
+  .nav-item { padding: 12px; }
+
+  body.menu-aberto { overflow: hidden; }
+
+  .main    { margin-left: 0; min-height: 0; }
   .topbar  { position: static; padding: 16px 20px; flex-wrap: wrap; gap: 12px; }
   .content { padding: 20px 16px; }
+}
+
+@media (max-width: 560px) {
+  .topbar { padding: 14px 16px; }
+  .topbar__title { font-size: 16px; }
+}
+
+.nav-item__badge--previa {
+  background: rgba(255, 179, 71, 0.14);
+  color: var(--warning);
 }
