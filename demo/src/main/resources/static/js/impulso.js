@@ -11,29 +11,34 @@ let quarentenas = [];
 let idNovaQuarentena = null;
 
 if (sessaoImpulso) {
-  quarentenas = lerQuarentenas();
-  renderizarQuarentenas();
+  carregarQuarentenas();
   window.setInterval(atualizarContagens, 1000);
   formularioImpulso.addEventListener('submit', registrarQuarentena);
+  listaImpulso.addEventListener('click', tratarAcao);
 }
 
-function chaveArmazenamento() {
-  return `fintwin.quarentenas.${sessaoImpulso.usuario.id}`;
+function paraRegistro(trava) {
+  const liberacao = new Date(trava.dataLiberacaoObrigatoria).getTime();
+  const inicio = trava.dataEntradaQuarentena ? new Date(trava.dataEntradaQuarentena).getTime() : liberacao - VINTE_QUATRO_HORAS;
+  return {
+    id: trava.id,
+    itemDesejado: trava.itemDesejado,
+    valor: Number(trava.valor),
+    justificativa: trava.justificativa,
+    status: trava.status,
+    inicio,
+    liberacao,
+    decisao: trava.dataDecisaoFinal ? new Date(trava.dataDecisaoFinal).getTime() : null
+  };
 }
 
-function lerQuarentenas() {
+async function carregarQuarentenas() {
   try {
-    return JSON.parse(sessionStorage.getItem(chaveArmazenamento()) || '[]');
-  } catch {
-    return [];
-  }
-}
-
-function salvarQuarentenas() {
-  try {
-    sessionStorage.setItem(chaveArmazenamento(), JSON.stringify(quarentenas.slice(0, 20)));
-  } catch {
-    return;
+    const travas = await requisicaoApi(`/api/financas/trava-impulso/${sessaoImpulso.usuario.id}`);
+    quarentenas = (travas || []).map(paraRegistro);
+    renderizarQuarentenas();
+  } catch (erro) {
+    mostrarFeedback(feedbackImpulso, erro.message, true);
   }
 }
 
@@ -52,22 +57,12 @@ async function registrarQuarentena(evento) {
       method: 'POST',
       body: JSON.stringify(valores)
     });
-    const agora = Date.now();
-    const liberacao = resultado.dataLiberacaoObrigatoria ? new Date(resultado.dataLiberacaoObrigatoria).getTime() : agora + VINTE_QUATRO_HORAS;
-    const registro = {
-      id: resultado.id ?? `local-${agora}`,
-      itemDesejado: resultado.itemDesejado ?? valores.itemDesejado,
-      valor: Number(resultado.valor ?? valores.valor),
-      justificativa: resultado.justificativa ?? valores.justificativa,
-      inicio: Math.min(agora, liberacao - VINTE_QUATRO_HORAS) || agora,
-      liberacao
-    };
+    const registro = paraRegistro(resultado);
     quarentenas = [registro, ...quarentenas.filter(item => item.id !== registro.id)];
     idNovaQuarentena = registro.id;
-    salvarQuarentenas();
     renderizarQuarentenas();
     formularioImpulso.reset();
-    mostrarFeedback(feedbackImpulso, `Quarentena iniciada. Volte em ${new Date(liberacao).toLocaleString('pt-BR', { weekday: 'long', hour: '2-digit', minute: '2-digit' })} para decidir.`);
+    mostrarFeedback(feedbackImpulso, `Quarentena iniciada. Volte em ${new Date(registro.liberacao).toLocaleString('pt-BR', { weekday: 'long', hour: '2-digit', minute: '2-digit' })} para decidir.`);
   } catch (erro) {
     mostrarFeedback(feedbackImpulso, erro.message, true);
   } finally {
@@ -75,9 +70,33 @@ async function registrarQuarentena(evento) {
   }
 }
 
+async function tratarAcao(evento) {
+  const botao = evento.target.closest('button[data-acao]');
+  if (!botao) return;
+  const { acao, id } = botao.dataset;
+  const item = quarentenas.find(registro => String(registro.id) === id);
+  if (!item) return;
+
+  if (acao === 'cancelar' && !window.confirm(`Desistir de "${item.itemDesejado}"?`)) return;
+
+  botao.closest('.quarantine__actions').querySelectorAll('button').forEach(b => { b.disabled = true; });
+  try {
+    const resultado = await requisicaoApi(`/api/financas/trava-impulso/${id}/${acao}`, { method: 'PUT' });
+    const atualizado = paraRegistro(resultado);
+    quarentenas = quarentenas.map(registro => registro.id === atualizado.id ? atualizado : registro);
+    renderizarQuarentenas();
+    mostrarFeedback(feedbackImpulso, acao === 'liberar'
+      ? `Compra confirmada. ${formatarMoeda(atualizado.valor)} entrou nas suas transações como despesa.`
+      : `Você desistiu de "${atualizado.itemDesejado}". ${formatarMoeda(atualizado.valor)} continuam com você.`);
+  } catch (erro) {
+    mostrarFeedback(feedbackImpulso, erro.message, true);
+    renderizarQuarentenas();
+  }
+}
+
 function renderizarQuarentenas() {
   listaImpulso.replaceChildren();
-  const emEspera = quarentenas.filter(item => item.liberacao > Date.now());
+  const emEspera = quarentenas.filter(item => item.status === 'QUARENTENA');
   const total = document.getElementById('impulso-total');
   total.hidden = !emEspera.length;
   total.textContent = `${formatarMoeda(emEspera.reduce((soma, item) => soma + item.valor, 0))} em espera`;
@@ -99,6 +118,7 @@ function criarCartao(item) {
   cartao.setAttribute('role', 'listitem');
   cartao.dataset.id = String(item.id);
   if (item.id === idNovaQuarentena) cartao.classList.add('quarantine--nova');
+  if (item.status !== 'QUARENTENA') cartao.classList.add('quarantine--decidida');
 
   const anel = criarElemento('div', 'ring');
   const desenho = document.createElementNS(SVG_IMPULSO, 'svg');
@@ -126,6 +146,21 @@ function criarCartao(item) {
   if (item.justificativa) corpo.append(criarElemento('p', 'quarantine__reason', `“${item.justificativa}”`));
   corpo.append(criarElemento('p', 'quarantine__meta'));
 
+  if (item.status === 'QUARENTENA') {
+    const acoes = criarElemento('div', 'quarantine__actions');
+    const confirmar = criarElemento('button', 'btn-sm', 'Confirmar compra');
+    confirmar.type = 'button';
+    confirmar.dataset.acao = 'liberar';
+    confirmar.dataset.id = String(item.id);
+    confirmar.hidden = true;
+    const desistir = criarElemento('button', 'btn-sm btn-sm--perigo', 'Desistir');
+    desistir.type = 'button';
+    desistir.dataset.acao = 'cancelar';
+    desistir.dataset.id = String(item.id);
+    acoes.append(confirmar, desistir);
+    corpo.append(acoes);
+  }
+
   cartao.append(anel, corpo);
   return cartao;
 }
@@ -135,15 +170,29 @@ function atualizarContagens() {
   listaImpulso.querySelectorAll('.quarantine').forEach(cartao => {
     const item = quarentenas.find(registro => String(registro.id) === cartao.dataset.id);
     if (!item) return;
+    const relogio = cartao.querySelector('.ring__clock');
+    const unidade = cartao.querySelector('.ring__unit');
+    const meta = cartao.querySelector('.quarantine__meta');
+    const progresso = cartao.querySelector('.ring__progress');
+
+    if (item.status !== 'QUARENTENA') {
+      const liberada = item.status === 'LIBERADA';
+      progresso.setAttribute('stroke-dashoffset', '0');
+      relogio.textContent = liberada ? '✓' : '✕';
+      unidade.textContent = liberada ? 'comprada' : 'desistiu';
+      const quando = item.decisao ? ` em ${new Date(item.decisao).toLocaleString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}` : '';
+      meta.textContent = liberada ? `Compra confirmada${quando}.` : `Compra evitada${quando}.`;
+      return;
+    }
+
     const duracao = Math.max(item.liberacao - item.inicio, 1);
     const restante = Math.max(item.liberacao - agora, 0);
     const liberada = restante === 0;
     cartao.classList.toggle('quarantine--liberada', liberada);
-    cartao.querySelector('.ring__progress').setAttribute('stroke-dashoffset', (CIRCUNFERENCIA_ANEL * (restante / duracao)).toFixed(2));
+    progresso.setAttribute('stroke-dashoffset', (CIRCUNFERENCIA_ANEL * (restante / duracao)).toFixed(2));
+    const confirmar = cartao.querySelector('button[data-acao="liberar"]');
+    if (confirmar) confirmar.hidden = !liberada;
 
-    const relogio = cartao.querySelector('.ring__clock');
-    const unidade = cartao.querySelector('.ring__unit');
-    const meta = cartao.querySelector('.quarantine__meta');
     if (liberada) {
       relogio.textContent = '✓';
       unidade.textContent = 'liberada';

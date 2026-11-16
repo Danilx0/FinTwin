@@ -23,7 +23,7 @@ async function requisicaoApi(caminho, opcoes = {}) {
   const token = sessionStorage.getItem('fintwin.token');
   const cabecalhos = new Headers(opcoes.headers || {});
   if (token) cabecalhos.set('Authorization', `Bearer ${token}`);
-  if (opcoes.body && !cabecalhos.has('Content-Type')) {
+  if (opcoes.body && !(opcoes.body instanceof FormData) && !cabecalhos.has('Content-Type')) {
     cabecalhos.set('Content-Type', 'application/json');
   }
 
@@ -98,7 +98,89 @@ function preencherUsuarioSidebar() {
   if (!usuario || !nome) return;
   nome.textContent = usuario.nome || usuario.email;
   document.getElementById('app-user-role').textContent = formatarTipoUsuario(usuario.tipoUsuario);
-  document.getElementById('app-user-avatar').textContent = iniciaisDe(usuario.nome || usuario.email);
+  document.querySelectorAll('[data-user-avatar]').forEach(avatar => aplicarAvatar(avatar, usuario));
+}
+
+const fotosCarregadas = new Map();
+
+/** A foto exige o token, entao e buscada via fetch e exibida como blob (o cache HTTP evita downloads repetidos). */
+function obterFotoUsuario(url) {
+  if (!fotosCarregadas.has(url)) {
+    const token = sessionStorage.getItem('fintwin.token');
+    const promessa = fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+      .then(resposta => {
+        if (!resposta.ok) throw new Error('Foto indisponível');
+        return resposta.blob();
+      })
+      .then(blob => URL.createObjectURL(blob))
+      .catch(erro => {
+        fotosCarregadas.delete(url);
+        throw erro;
+      });
+    fotosCarregadas.set(url, promessa);
+  }
+  return fotosCarregadas.get(url);
+}
+
+function aplicarAvatar(elemento, usuario) {
+  const iniciais = iniciaisDe(usuario?.nome || usuario?.email);
+  const url = usuario?.fotoPerfilUrl;
+  elemento.dataset.fotoUrl = url || '';
+  if (!url) {
+    elemento.style.backgroundImage = '';
+    elemento.textContent = iniciais;
+    return;
+  }
+  obterFotoUsuario(url)
+    .then(endereco => {
+      if (elemento.dataset.fotoUrl !== url) return;
+      elemento.style.backgroundImage = `url("${endereco}")`;
+      elemento.textContent = '';
+    })
+    .catch(() => {
+      elemento.style.backgroundImage = '';
+      elemento.textContent = iniciais;
+    });
+}
+
+function iniciarMenuMovel() {
+  const menu = document.getElementById('app-sidebar');
+  const botaoAbrir = document.querySelector('[data-menu-abrir]');
+  const fundo = document.querySelector('.sidebar-backdrop');
+  if (!menu || !botaoAbrir || !fundo) return;
+  const telaPequena = window.matchMedia('(max-width: 900px)');
+  const fora = [document.querySelector('.mobile-bar'), document.querySelector('.main')].filter(Boolean);
+
+  const abrir = () => {
+    menu.classList.add('sidebar--aberta');
+    fundo.hidden = false;
+    document.body.classList.add('menu-aberto');
+    botaoAbrir.setAttribute('aria-expanded', 'true');
+    fora.forEach(elemento => { elemento.inert = true; });
+    menu.querySelector('.sidebar__fechar')?.focus();
+  };
+
+  const fechar = (devolverFoco = true) => {
+    if (!menu.classList.contains('sidebar--aberta')) return;
+    menu.classList.remove('sidebar--aberta');
+    fundo.hidden = true;
+    document.body.classList.remove('menu-aberto');
+    botaoAbrir.setAttribute('aria-expanded', 'false');
+    fora.forEach(elemento => { elemento.inert = false; });
+    if (devolverFoco) botaoAbrir.focus();
+  };
+
+  botaoAbrir.addEventListener('click', abrir);
+  document.querySelectorAll('[data-menu-fechar]').forEach(elemento => elemento.addEventListener('click', () => fechar()));
+  menu.addEventListener('click', evento => {
+    if (evento.target.closest('a')) fechar(false);
+  });
+  document.addEventListener('keydown', evento => {
+    if (evento.key === 'Escape') fechar();
+  });
+  telaPequena.addEventListener('change', evento => {
+    if (!evento.matches) fechar(false);
+  });
 }
 
 document.querySelectorAll('[data-logout]').forEach(elemento => {
@@ -110,3 +192,4 @@ document.querySelectorAll('[data-logout]').forEach(elemento => {
 });
 
 preencherUsuarioSidebar();
+iniciarMenuMovel();
