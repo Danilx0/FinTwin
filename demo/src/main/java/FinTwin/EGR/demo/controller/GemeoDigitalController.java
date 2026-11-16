@@ -12,7 +12,9 @@ import FinTwin.EGR.demo.service.GemeoDigitalService;
 import FinTwin.EGR.demo.service.TesteEstresseService;
 import tools.jackson.databind.json.JsonMapper;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,7 +46,11 @@ public class GemeoDigitalController {
 
     @PostMapping("/gemeo-digital/{usuarioId}")
     public ResponseEntity<GemeoDigitalResponseDTO> gerarGemeoDigital(@PathVariable Long usuarioId,
-                                                                    @Valid @RequestBody GemeoDigitalRequestDTO dto) {
+                                                                    @Valid @RequestBody GemeoDigitalRequestDTO dto,
+                                                                    @AuthenticationPrincipal Usuario usuarioAutenticado) {
+        if (!usuarioAutorizado(usuarioId, usuarioAutenticado)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
@@ -62,7 +68,11 @@ public class GemeoDigitalController {
     }
 
     @GetMapping("/gemeo-digital/{usuarioId}")
-    public ResponseEntity<List<GemeoDigitalResponseDTO>> listarGemeos(@PathVariable Long usuarioId) {
+    public ResponseEntity<List<GemeoDigitalResponseDTO>> listarGemeos(@PathVariable Long usuarioId,
+                                                                       @AuthenticationPrincipal Usuario usuarioAutenticado) {
+        if (!usuarioAutorizado(usuarioId, usuarioAutenticado)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         List<GemeoDigitalResponseDTO> lista = gemeoDigitalService.listarPorUsuario(usuarioId).stream()
                 .map(gemeo -> GemeoDigitalResponseDTO.fromEntity(gemeo, jsonMapper))
                 .collect(Collectors.toList());
@@ -71,7 +81,11 @@ public class GemeoDigitalController {
 
     @PostMapping("/teste-estresse/{usuarioId}")
     public ResponseEntity<CenarioEstresseResponseDTO> executarTesteEstresse(@PathVariable Long usuarioId,
-                                                                           @Valid @RequestBody CenarioEstresseRequestDTO dto) {
+                                                                           @Valid @RequestBody CenarioEstresseRequestDTO dto,
+                                                                           @AuthenticationPrincipal Usuario usuarioAutenticado) {
+        if (!usuarioAutorizado(usuarioId, usuarioAutenticado)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
@@ -86,5 +100,9 @@ public class GemeoDigitalController {
         );
 
         return ResponseEntity.ok(CenarioEstresseResponseDTO.fromEntity(cenario));
+    }
+
+    private boolean usuarioAutorizado(Long usuarioId, Usuario usuarioAutenticado) {
+        return usuarioAutenticado != null && usuarioId.equals(usuarioAutenticado.getId());
     }
 }
