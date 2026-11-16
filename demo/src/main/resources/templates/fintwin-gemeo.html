@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FinTwin — Gêmeo Digital</title>
+<link rel="stylesheet" th:href="@{/css/base.css}">
+<link rel="stylesheet" th:href="@{/css/layout.css}">
+<link rel="stylesheet" th:href="@{/css/components.css}">
+<link rel="stylesheet" th:href="@{/css/gemeo.css}">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <nav th:replace="~{fragments/app-shell :: sidebar('gemeo')}"></nav>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar__lead">
+        <h1 class="topbar__title">Gêmeo Digital</h1>
+        <p class="topbar__subtitle">Projeção do seu patrimônio em até 35 anos</p>
+      </div>
+      <div class="topbar__actions">
+        <span class="sync-pill"><span class="sync-dot"></span><span id="gemeo-tempo">Processamento em até 4 s</span></span>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="page-grid">
+
+        <section class="card form-card" aria-labelledby="gemeo-form-title">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title" id="gemeo-form-title">Novo cenário</h2>
+              <p class="card-subtitle">Ajuste os parâmetros e gere a projeção</p>
+            </div>
+          </div>
+
+          <form id="gemeo-form" novalidate>
+            <div class="field-group">
+              <div class="field">
+                <label for="nomeCenario">Nome do cenário</label>
+                <input id="nomeCenario" name="nomeCenario" maxlength="100" placeholder="Aposentadoria aos 55" required>
+              </div>
+
+              <div class="field">
+                <div class="horizon-label">
+                  <label for="horizonteAnos">Horizonte</label>
+                  <output id="horizonte-valor" for="horizonteAnos">10 anos</output>
+                </div>
+                <input class="range" id="horizonteAnos" name="horizonteAnos" type="range" min="1" max="35" value="10" required>
+                <div class="range-scale" aria-hidden="true"><span>1</span><span>10</span><span>20</span><span>35</span></div>
+              </div>
+
+              <div class="field">
+                <label for="patrimonioInicial">Patrimônio inicial</label>
+                <div class="field__prefix"><span>R$</span><input id="patrimonioInicial" name="patrimonioInicial" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00" required></div>
+              </div>
+
+              <div class="field">
+                <label for="aporteMensal">Aporte mensal</label>
+                <div class="field__prefix"><span>R$</span><input id="aporteMensal" name="aporteMensal" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00" required></div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="taxaRendimentoAnual">Rendimento ao ano</label>
+                  <div class="field__prefix field__prefix--suffix"><input id="taxaRendimentoAnual" name="taxaRendimentoAnual" type="number" step="0.01" value="8" inputmode="decimal" required><span>%</span></div>
+                </div>
+                <div class="field">
+                  <label for="inflacaoAnual">Inflação ao ano</label>
+                  <div class="field__prefix field__prefix--suffix"><input id="inflacaoAnual" name="inflacaoAnual" type="number" step="0.01" value="4" inputmode="decimal"><span>%</span></div>
+                </div>
+              </div>
+            </div>
+
+            <p class="feedback" id="gemeo-feedback" role="status" aria-live="polite"></p>
+            <button class="btn-primary" type="submit">Gerar projeção</button>
+          </form>
+        </section>
+
+        <div class="page-stack">
+
+          <section class="stat-strip" aria-label="Resumo do cenário selecionado">
+            <div class="stat">
+              <div class="stat__label">Patrimônio projetado</div>
+              <div class="stat__value stat__value--positive" id="gemeo-stat-final">—</div>
+              <div class="stat__note" id="gemeo-stat-final-nota">Selecione ou gere um cenário</div>
+            </div>
+            <div class="stat">
+              <div class="stat__label">Dinheiro investido</div>
+              <div class="stat__value" id="gemeo-stat-investido">—</div>
+              <div class="stat__note">Patrimônio inicial mais aportes</div>
+            </div>
+            <div class="stat">
+              <div class="stat__label">Ganho com rendimentos</div>
+              <div class="stat__value" id="gemeo-stat-ganho">—</div>
+              <div class="stat__note" id="gemeo-stat-ganho-nota">Diferença entre as curvas</div>
+            </div>
+          </section>
+
+          <section class="card chart-card" aria-labelledby="gemeo-chart-title">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title" id="gemeo-chart-title">Evolução projetada</h2>
+                <p class="card-subtitle" id="gemeo-chart-subtitle">Nenhum cenário selecionado</p>
+              </div>
+              <ul class="chart-legend" aria-hidden="true">
+                <li><span class="chart-legend__swatch chart-legend__swatch--patrimonio"></span>Patrimônio</li>
+                <li><span class="chart-legend__swatch chart-legend__swatch--investido"></span>Investido</li>
+              </ul>
+            </div>
+
+            <p class="chart-readout" id="gemeo-readout" aria-live="polite"></p>
+            <div class="projection-chart" id="gemeo-grafico">
+              <div class="empty-state">
+                <strong>Seu gêmeo ainda não tem projeções</strong>
+                Preencha os parâmetros ao lado para ver como seu patrimônio pode evoluir.
+              </div>
+            </div>
+
+            <details class="year-table" id="gemeo-tabela-wrap" hidden>
+              <summary>Ver valores ano a ano</summary>
+              <div class="data-table-wrap">
+                <table class="data-table">
+                  <thead>
+                    <tr><th scope="col">Ano</th><th scope="col" class="is-numeric">Investido</th><th scope="col" class="is-numeric">Patrimônio</th><th scope="col" class="is-numeric">Rendimentos</th></tr>
+                  </thead>
+                  <tbody id="gemeo-tabela"></tbody>
+                </table>
+              </div>
+            </details>
+          </section>
+
+          <section class="card" aria-labelledby="gemeo-lista-title">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title" id="gemeo-lista-title">Cenários salvos</h2>
+                <p class="card-subtitle">Escolha um cenário para ver no gráfico</p>
+              </div>
+            </div>
+            <div class="scenario-list" id="gemeo-resultados" role="list"></div>
+          </section>
+
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script th:src="@{/js/app-common.js}" defer></script>
+<script th:src="@{/js/gemeo.js}" defer></script>
+</body>
+</html>

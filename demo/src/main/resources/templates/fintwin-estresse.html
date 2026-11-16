@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FinTwin — Teste de Estresse</title>
+<link rel="stylesheet" th:href="@{/css/base.css}">
+<link rel="stylesheet" th:href="@{/css/layout.css}">
+<link rel="stylesheet" th:href="@{/css/components.css}">
+<link rel="stylesheet" th:href="@{/css/estresse.css}">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <nav th:replace="~{fragments/app-shell :: sidebar('estresse')}"></nav>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar__lead">
+        <h1 class="topbar__title">Teste de Estresse</h1>
+        <p class="topbar__subtitle">Quanto tempo sua reserva aguenta uma crise</p>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="page-grid">
+
+        <section class="card form-card" aria-labelledby="estresse-form-title">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title" id="estresse-form-title">Montar cenário</h2>
+              <p class="card-subtitle">Comece por um cenário pronto ou ajuste os valores</p>
+            </div>
+          </div>
+
+          <div class="chip-group preset-group" role="group" aria-label="Cenários prontos">
+            <button class="chip" type="button" data-preset="metade" aria-pressed="true">Renda pela metade</button>
+            <button class="chip" type="button" data-preset="desemprego" aria-pressed="false">Desemprego</button>
+            <button class="chip" type="button" data-preset="corte" aria-pressed="false">Corte de 30%</button>
+          </div>
+
+          <form id="estresse-form" novalidate>
+            <div class="field-group">
+              <div class="field">
+                <label for="titulo">Nome do cenário</label>
+                <input id="titulo" name="titulo" maxlength="100" value="Renda pela metade" required>
+              </div>
+
+              <div class="field">
+                <label for="rendaMensalAtual">Renda mensal atual</label>
+                <div class="field__prefix"><span>R$</span><input id="rendaMensalAtual" name="rendaMensalAtual" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00" required></div>
+              </div>
+
+              <div class="field">
+                <label for="despesaMensalAtual">Despesas mensais</label>
+                <div class="field__prefix"><span>R$</span><input id="despesaMensalAtual" name="despesaMensalAtual" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00" required></div>
+              </div>
+
+              <div class="field">
+                <label for="reservaEmergencia">Reserva de emergência</label>
+                <div class="field__prefix"><span>R$</span><input id="reservaEmergencia" name="reservaEmergencia" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00" required></div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="percentualCorteRenda">Queda da renda (%)</label>
+                  <input id="percentualCorteRenda" name="percentualCorteRenda" type="number" min="1" max="100" value="50" inputmode="numeric" required>
+                </div>
+                <div class="field">
+                  <label for="duracaoMeses">Duração (meses)</label>
+                  <input id="duracaoMeses" name="duracaoMeses" type="number" min="1" max="120" value="12" inputmode="numeric" required>
+                </div>
+              </div>
+            </div>
+
+            <p class="feedback" id="estresse-feedback" role="status" aria-live="polite"></p>
+            <button class="btn-primary" type="submit">Simular cenário</button>
+          </form>
+        </section>
+
+        <div class="page-stack">
+
+          <section class="card stress-result" aria-labelledby="estresse-veredito" id="estresse-resultado">
+            <h2 class="stress-verdict" id="estresse-veredito">Simule um cenário para ver até onde sua reserva vai.</h2>
+            <p class="stress-verdict__sub" id="estresse-veredito-sub">O resultado mostra, mês a mês, quando a reserva deixa de cobrir a diferença entre renda e despesas.</p>
+
+            <div class="month-track" id="estresse-meses" role="img" aria-label="Linha do tempo do cenário"></div>
+
+            <ul class="month-legend" aria-hidden="true">
+              <li><span class="month-legend__swatch month-legend__swatch--coberto"></span>Coberto pela reserva</li>
+              <li><span class="month-legend__swatch month-legend__swatch--descoberto"></span>Sem cobertura</li>
+            </ul>
+          </section>
+
+          <section class="stat-strip" aria-label="Números do cenário">
+            <div class="stat">
+              <div class="stat__label">Déficit mensal</div>
+              <div class="stat__value" id="estresse-deficit">—</div>
+              <div class="stat__note">Despesas menos a renda reduzida</div>
+            </div>
+            <div class="stat">
+              <div class="stat__label">Impacto no patrimônio</div>
+              <div class="stat__value" id="estresse-impacto">—</div>
+              <div class="stat__note">Estimativa do FinTwin</div>
+            </div>
+            <div class="stat">
+              <div class="stat__label">Fôlego da reserva</div>
+              <div class="stat__value" id="estresse-folego">—</div>
+              <div class="stat__note" id="estresse-folego-nota">Meses cobertos</div>
+            </div>
+          </section>
+
+          <section class="card" aria-labelledby="estresse-historico-title">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title" id="estresse-historico-title">Simulações desta sessão</h2>
+                <p class="card-subtitle">Compare os cenários que você testou agora</p>
+              </div>
+            </div>
+            <div class="stress-history" id="estresse-historico"></div>
+          </section>
+
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script th:src="@{/js/app-common.js}" defer></script>
+<script th:src="@{/js/estresse.js}" defer></script>
+</body>
+</html>

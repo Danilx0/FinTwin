@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<nav class="sidebar" th:fragment="sidebar(ativo)" aria-label="Navegação principal">
+  <a class="sidebar__brand" href="/dashboard">
+    <div class="sidebar__logo">FT</div>
+    <div class="sidebar__brand-name">Fin<em>Twin</em></div>
+  </a>
+
+  <div class="nav-section">
+    <div class="nav-section__label">Principal</div>
+    <a class="nav-item" href="/dashboard" th:classappend="${ativo == 'dashboard'} ? 'nav-item--active'" th:attr="aria-current=${ativo == 'dashboard'} ? 'page' : null">
+      <svg class="nav-item__icon" width="16" height="16" fill="none" viewBox="0 0 16 16" aria-hidden="true">
+        <rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+        <rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+        <rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+        <rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+      </svg>
+      <span>Dashboard</span>
+    </a>
+    <a class="nav-item" href="/gemeo-digital" th:classappend="${ativo == 'gemeo'} ? 'nav-item--active'" th:attr="aria-current=${ativo == 'gemeo'} ? 'page' : null">
+      <svg class="nav-item__icon" width="16" height="16" fill="none" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M2 13l4-4 3 2 5-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M10 5h4v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Gêmeo Digital</span>
+      <span class="nav-item__badge">IA</span>
+    </a>
+    <a class="nav-item" href="/transacoes" th:classappend="${ativo == 'transacoes'} ? 'nav-item--active'" th:attr="aria-current=${ativo == 'transacoes'} ? 'page' : null">
+      <svg class="nav-item__icon" width="16" height="16" fill="none" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M2 5h12M2 8h8M2 11h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span>Transações</span>
+    </a>
+    <a class="nav-item" href="/teste-estresse" th:classappend="${ativo == 'estresse'} ? 'nav-item--active'" th:attr="aria-current=${ativo == 'estresse'} ? 'page' : null">
+      <svg class="nav-item__icon" width="16" height="16" fill="none" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M8 2v3M8 11v3M2 8h3M11 8h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/>
+      </svg>
+      <span>Teste de Estresse</span>
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section__label">Comportamento</div>
+    <a class="nav-item" href="/trava-impulso" th:classappend="${ativo == 'impulso'} ? 'nav-item--active'" th:attr="aria-current=${ativo == 'impulso'} ? 'page' : null">
+      <svg class="nav-item__icon" width="16" height="16" fill="none" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M8 2a6 6 0 100 12A6 6 0 008 2zM8 5v3l2 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span>Trava de Impulso</span>
+    </a>
+    <a class="nav-item" href="/relatorios" th:classappend="${ativo == 'relatorios'} ? 'nav-item--active'" th:attr="aria-current=${ativo == 'relatorios'} ? 'page' : null">
+      <svg class="nav-item__icon" width="16" height="16" fill="none" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M4 14V6l4-4h4a1 1 0 011 1v11a1 1 0 01-1 1H5a1 1 0 01-1-1z" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M8 2v4h4M6 10h4M6 12h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span>Relatórios</span>
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section__label">Sistema</div>
+    <a class="nav-item" href="/login" data-logout>
+      <svg class="nav-item__icon" width="16" height="16" fill="none" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M10 8H3M3 8l3-3M3 8l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M8 3h4a1 1 0 011 1v8a1 1 0 01-1 1H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span>Sair</span>
+    </a>
+  </div>
+
+  <div class="sidebar__footer">
+    <div class="user-chip" id="perfil">
+      <div class="user-chip__avatar" id="app-user-avatar">FT</div>
+      <div class="user-chip__info">
+        <div class="user-chip__name" id="app-user-name">FinTwin</div>
+        <div class="user-chip__role" id="app-user-role">Usuário</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+</body>
+</html>

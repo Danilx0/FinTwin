@@ -1,0 +1,207 @@
+.how-it-works .card-title {
+  margin-bottom: 16px;
+}
+
+.steps {
+  list-style: none;
+  counter-reset: passo;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.steps li {
+  counter-increment: passo;
+  position: relative;
+  padding-left: 40px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.steps li::before {
+  content: counter(passo);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cyan);
+  border: 1px solid rgba(61, 241, 255, 0.35);
+  background: rgba(61, 241, 255, 0.06);
+}
+
+.steps strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.impulso-total {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--warning);
+  background: rgba(255, 179, 71, 0.10);
+  border: 1px solid rgba(255, 179, 71, 0.25);
+  border-radius: 20px;
+  padding: 5px 12px;
+  white-space: nowrap;
+}
+
+.quarantine-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quarantine {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-input);
+}
+
+.quarantine--nova {
+  animation: fadeUp 0.4s ease both;
+}
+
+.quarantine--liberada {
+  border-color: rgba(61, 241, 255, 0.35);
+}
+
+.ring {
+  position: relative;
+  width: 96px;
+  height: 96px;
+}
+
+.ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ring__track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-width: 6;
+}
+
+.ring__progress {
+  fill: none;
+  stroke: var(--warning);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.quarantine--liberada .ring__progress {
+  stroke: var(--cyan);
+}
+
+.ring__time {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.ring__clock {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.ring__unit {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.quarantine__body {
+  min-width: 0;
+}
+
+.quarantine__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.quarantine__item {
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.quarantine__value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--warning);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.quarantine--liberada .quarantine__value {
+  color: var(--cyan);
+}
+
+.quarantine__reason {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+
+.quarantine__meta {
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.quarantine--liberada .quarantine__meta {
+  color: var(--cyan);
+  font-weight: 500;
+}
+
+@media (max-width: 480px) {
+  .quarantine {
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 14px;
+    padding: 14px;
+  }
+
+  .ring {
+    width: 72px;
+    height: 72px;
+  }
+
+  .ring__clock {
+    font-size: 14px;
+  }
+
+  .quarantine__top {
+    flex-direction: column;
+    gap: 2px;
+  }
+}

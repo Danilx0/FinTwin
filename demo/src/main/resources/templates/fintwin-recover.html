@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FinTwin — Recuperar senha</title>
+  <link rel="stylesheet" th:href="@{/css/base.css}">
+  <link rel="stylesheet" th:href="@{/css/workflow.css}">
+</head>
+<body class="bg-grid">
+  <main class="recovery-shell">
+    <section class="recovery-card" aria-labelledby="recovery-title">
+      <a class="workflow-brand" href="/login">FinTwin</a>
+      <h1 class="workflow-title" id="recovery-title">Recuperar senha</h1>
+      <p class="workflow-description">Informe o e-mail da conta para gerar o token de recuperação.</p>
+      <form id="recovery-form" class="field-group">
+        <div class="field">
+          <label for="recovery-email">E-mail</label>
+          <input id="recovery-email" type="email" autocomplete="email" required>
+        </div>
+        <button class="btn-primary" type="submit">Gerar token</button>
+      </form>
+      <form id="reset-form" class="field-group" hidden>
+        <div class="field">
+          <label for="reset-token">Token de recuperação</label>
+          <input id="reset-token" autocomplete="one-time-code" required>
+        </div>
+        <div class="field">
+          <label for="new-password">Nova senha</label>
+          <input id="new-password" type="password" minlength="6" autocomplete="new-password" required>
+        </div>
+        <button class="btn-primary" type="submit">Redefinir senha</button>
+      </form>
+      <p class="workflow-feedback" id="recovery-feedback" role="status" aria-live="polite"></p>
+      <a class="workflow-back" href="/login">Voltar ao login</a>
+    </section>
+  </main>
+  <script th:src="@{/js/app-common.js}" defer></script>
+  <script th:src="@{/js/recovery.js}" defer></script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FinTwin — Trava de Impulso</title>
+<link rel="stylesheet" th:href="@{/css/base.css}">
+<link rel="stylesheet" th:href="@{/css/layout.css}">
+<link rel="stylesheet" th:href="@{/css/components.css}">
+<link rel="stylesheet" th:href="@{/css/impulso.css}">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <nav th:replace="~{fragments/app-shell :: sidebar('impulso')}"></nav>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar__lead">
+        <h1 class="topbar__title">Trava de Impulso</h1>
+        <p class="topbar__subtitle">Modo Quarentena: 24 horas entre a vontade e a compra</p>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="page-grid">
+
+        <div class="page-stack">
+          <section class="card form-card" aria-labelledby="impulso-form-title">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title" id="impulso-form-title">Colocar compra em quarentena</h2>
+                <p class="card-subtitle">A decisão fica liberada só depois de 24 horas</p>
+              </div>
+            </div>
+
+            <form id="impulso-form" novalidate>
+              <div class="field-group">
+                <div class="field">
+                  <label for="itemDesejado">O que você quer comprar?</label>
+                  <input id="itemDesejado" name="itemDesejado" maxlength="200" placeholder="Fone de ouvido sem fio" required>
+                </div>
+                <div class="field">
+                  <label for="valor">Valor</label>
+                  <div class="field__prefix"><span>R$</span><input id="valor" name="valor" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="0,00" required></div>
+                </div>
+                <div class="field">
+                  <label for="justificativa">Por que agora?</label>
+                  <textarea id="justificativa" name="justificativa" maxlength="500" placeholder="Escreva o motivo. Amanhã você relê com a cabeça fria."></textarea>
+                </div>
+              </div>
+
+              <p class="feedback" id="impulso-feedback" role="status" aria-live="polite"></p>
+              <button class="btn-primary" type="submit">Iniciar quarentena de 24h</button>
+            </form>
+          </section>
+
+          <section class="card how-it-works" aria-labelledby="impulso-como-title">
+            <h2 class="card-title" id="impulso-como-title">Como funciona</h2>
+            <ol class="steps">
+              <li><strong>Registre o desejo</strong>Anote o item, o valor e o motivo no momento da vontade.</li>
+              <li><strong>Espere 24 horas</strong>O FinTwin bloqueia a decisão até o prazo terminar.</li>
+              <li><strong>Decida com calma</strong>Releia o motivo e veja se a compra ainda faz sentido.</li>
+            </ol>
+          </section>
+        </div>
+
+        <section class="card" aria-labelledby="impulso-lista-title">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title" id="impulso-lista-title">Em quarentena</h2>
+              <p class="card-subtitle" id="impulso-lista-sub">Pedidos registrados neste navegador</p>
+            </div>
+            <span class="impulso-total" id="impulso-total" hidden></span>
+          </div>
+          <div class="quarantine-list" id="impulso-resultado" role="list"></div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script th:src="@{/js/app-common.js}" defer></script>
+<script th:src="@{/js/impulso.js}" defer></script>
+</body>
+</html>

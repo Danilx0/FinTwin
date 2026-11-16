@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FinTwin — Acesso</title>
+<link rel="stylesheet" th:href="@{/css/base.css}">
+<link rel="stylesheet" th:href="@{/css/auth.css}">
+<link rel="stylesheet" th:href="@{/css/workflow.css}">
+</head>
+<body class="bg-grid">
+
+<div class="glow-orb glow-orb--tl"></div>
+<div class="glow-orb glow-orb--br"></div>
+
+<div class="auth-layout">
+
+  <div class="visual-panel">
+    <div class="visual-panel__brand">
+      <div class="visual-panel__logo">FT</div>
+      <div class="visual-panel__brand-name">Fin<em>Twin</em></div>
+    </div>
+
+    <div class="visual-panel__headline">
+      <h1>Seu <em>gêmeo digital</em> financeiro começa aqui.</h1>
+      <p>Projete seu patrimônio por até 35 anos, simule crises e tome decisões com inteligência comportamental.</p>
+    </div>
+
+    <div class="visual-stats">
+      <div class="visual-stats__item">
+        <span class="visual-stats__value">35</span>
+        <span class="visual-stats__label">anos de projeção</span>
+      </div>
+      <div class="visual-stats__item">
+        <span class="visual-stats__value">95%</span>
+        <span class="visual-stats__label">precisão da IA</span>
+      </div>
+      <div class="visual-stats__item">
+        <span class="visual-stats__value">6h</span>
+        <span class="visual-stats__label">ciclo de sync</span>
+      </div>
+    </div>
+
+    <svg class="visual-chart" viewBox="0 0 300 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#3DF1FF" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="#3DF1FF" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <path d="M0 100 C30 95 50 80 80 70 C110 60 130 40 160 30 C190 20 220 15 260 8 L260 120 L0 120 Z" fill="url(#cg)"/>
+      <path d="M0 100 C30 95 50 80 80 70 C110 60 130 40 160 30 C190 20 220 15 260 8" stroke="#3DF1FF" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="260" cy="8"  r="4" fill="#3DF1FF"/>
+      <circle cx="160" cy="30" r="3" fill="#B7E7FC" opacity="0.8"/>
+      <circle cx="80"  cy="70" r="3" fill="#B7E7FC" opacity="0.8"/>
+    </svg>
+  </div>
+
+  <div class="form-panel">
+
+    <div class="form-tabs">
+      <button type="button" class="form-tab form-tab--active" id="tab-login" onclick="showLogin()">Entrar</button>
+      <button type="button" class="form-tab" id="tab-cadastro" onclick="showCadastro()">Criar conta</button>
+    </div>
+
+    <form id="form-login">
+      <h2 class="form-title">Bem-vindo de volta</h2>
+      <p class="form-subtitle">Acesse seu gêmeo digital financeiro.</p>
+
+      <div class="field-group">
+        <div class="field">
+          <label for="email-login">E-mail</label>
+          <input id="email-login" name="email" type="email" autocomplete="email" placeholder="seu@email.com" required>
+        </div>
+        <div class="field">
+          <label for="senha-login">Senha</label>
+          <input id="senha-login" name="senha" type="password" autocomplete="current-password" placeholder="••••••••" required>
+        </div>
+      </div>
+
+      <a href="/recuperar-senha" class="forgot-link">Esqueci minha senha</a>
+
+      <div class="info-box">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="7" stroke="#3DF1FF" stroke-width="1.5"/>
+          <path d="M8 7v4M8 5h.01" stroke="#3DF1FF" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        Após o login, será solicitado o código de autenticação de dois fatores (2FA/TOTP).
+      </div>
+
+      <p class="form-feedback" id="login-feedback" role="status" aria-live="polite"></p>
+      <button class="btn-primary" type="submit">Entrar na conta</button>
+
+
+
+    </form>
+
+    <form id="form-cadastro" style="display:none">
+      <h2 class="form-title">Criar sua conta</h2>
+      <p class="form-subtitle">Configure seu perfil de gestão financeira.</p>
+
+      <div class="field-group">
+        <div class="field">
+          <label for="email-cad">E-mail</label>
+          <input id="email-cad" name="email" type="email" autocomplete="email" placeholder="seu@email.com" required>
+        </div>
+        <div class="field">
+          <label for="nome">Nome completo</label>
+          <input id="nome" name="nome" type="text" autocomplete="name" maxlength="100" placeholder="Seu nome" required>
+        </div>
+        <div class="field">
+          <label for="senha-cad">Senha</label>
+          <input id="senha-cad" name="senha" type="password" autocomplete="new-password" minlength="6" placeholder="Mínimo 6 caracteres" required>
+        </div>
+        <div class="field">
+          <label for="tipo-cadastro">Perfil de usuário</label>
+          <select id="tipo-cadastro" name="tipoUsuario" required>
+            <option value="INDIVIDUAL">Individual</option>
+            <option value="FAMILIAR">Familiar</option>
+          </select>
+        </div>
+      </div>
+
+      <p class="form-feedback" id="cadastro-feedback" role="status" aria-live="polite"></p>
+      <button class="btn-primary" type="submit">Criar conta grátis</button>
+    </form>
+
+  </div>
+</div>
+
+<script th:src="@{/js/auth.js}" defer></script>
+
+</body>
+</html>

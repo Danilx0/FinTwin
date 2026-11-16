@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FinTwin — Relatórios</title>
+<link rel="stylesheet" th:href="@{/css/base.css}">
+<link rel="stylesheet" th:href="@{/css/layout.css}">
+<link rel="stylesheet" th:href="@{/css/components.css}">
+<link rel="stylesheet" th:href="@{/css/relatorios.css}">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <nav th:replace="~{fragments/app-shell :: sidebar('relatorios')}"></nav>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar__lead">
+        <h1 class="topbar__title">Relatórios</h1>
+        <p class="topbar__subtitle">Exporte suas transações consolidadas</p>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="page-grid">
+
+        <section class="card form-card" aria-labelledby="relatorio-form-title">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title" id="relatorio-form-title">Exportar transações</h2>
+              <p class="card-subtitle">Até 5.000 registros, das mais recentes para as mais antigas</p>
+            </div>
+          </div>
+
+          <form id="relatorio-form" novalidate>
+            <div class="field-group">
+              <fieldset class="format-options">
+                <legend>Formato</legend>
+                <label class="format-option">
+                  <input type="radio" name="formato" value="CSV" checked>
+                  <span class="format-option__body">
+                    <span class="format-option__name">CSV</span>
+                    <span class="format-option__desc">Abre no Excel, Google Sheets e LibreOffice</span>
+                  </span>
+                </label>
+              </fieldset>
+
+              <div class="report-columns">
+                <p class="report-columns__title">Colunas do arquivo</p>
+                <ul>
+                  <li>Data</li>
+                  <li>Descrição</li>
+                  <li>Tipo</li>
+                  <li>Categoria</li>
+                  <li>Valor</li>
+                </ul>
+              </div>
+            </div>
+
+            <p class="feedback" id="relatorio-feedback" role="status" aria-live="polite"></p>
+            <button class="btn-primary" type="submit">Gerar e baixar CSV</button>
+          </form>
+        </section>
+
+        <div class="page-stack">
+
+          <section class="stat-strip" aria-label="Conteúdo do relatório">
+            <div class="stat">
+              <div class="stat__label">Transações incluídas</div>
+              <div class="stat__value" id="relatorio-qtd">—</div>
+              <div class="stat__note" id="relatorio-qtd-nota">Limite de 5.000 por arquivo</div>
+            </div>
+            <div class="stat">
+              <div class="stat__label">Período coberto</div>
+              <div class="stat__value stat__value--muted" id="relatorio-periodo">—</div>
+              <div class="stat__note" id="relatorio-periodo-nota">Da mais antiga à mais recente</div>
+            </div>
+            <div class="stat">
+              <div class="stat__label">Resultado líquido</div>
+              <div class="stat__value" id="relatorio-liquido">—</div>
+              <div class="stat__note">Receitas menos despesas</div>
+            </div>
+          </section>
+
+          <section class="card" aria-labelledby="relatorio-previa-title">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title" id="relatorio-previa-title">Prévia do arquivo</h2>
+                <p class="card-subtitle">Primeiras linhas, como vão aparecer na planilha</p>
+              </div>
+            </div>
+            <div class="data-table-wrap">
+              <table class="data-table report-preview">
+                <thead>
+                  <tr><th scope="col">Data</th><th scope="col">Descrição</th><th scope="col">Tipo</th><th scope="col">Categoria</th><th scope="col" class="is-numeric">Valor</th></tr>
+                </thead>
+                <tbody id="relatorio-previa"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="card" aria-labelledby="relatorio-gerados-title">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title" id="relatorio-gerados-title">Gerados nesta sessão</h2>
+                <p class="card-subtitle">Baixe novamente sem gerar outro arquivo</p>
+              </div>
+            </div>
+            <div class="report-list" id="relatorio-resultado"></div>
+          </section>
+
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script th:src="@{/js/app-common.js}" defer></script>
+<script th:src="@{/js/relatorios.js}" defer></script>
+</body>
+</html>

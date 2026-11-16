@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FinTwin — Verificação 2FA</title>
+<link rel="stylesheet" th:href="@{/css/base.css}">
+<link rel="stylesheet" th:href="@{/css/twofa.css}">
+<link rel="stylesheet" th:href="@{/css/workflow.css}">
+</head>
+<body class="bg-grid">
+
+<div class="glow-orb glow-orb--center"></div>
+
+<div class="twofa-card">
+
+  <div class="shield-icon">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <path d="M14 3L4 7v8c0 5.55 4.3 10.74 10 12 5.7-1.26 10-6.45 10-12V7L14 3z"
+            stroke="#3DF1FF" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M10 14l3 3 5-5"
+            stroke="#3DF1FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <h2>Verificação de dois fatores</h2>
+  <p>Digite o código de 6 dígitos gerado pelo seu aplicativo autenticador (TOTP).</p>
+
+  <form id="twofa-form">
+    <input id="twofa-email" type="hidden" name="email">
+    <div class="otp-row" id="otpRow">
+      <input class="otp-input" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code" aria-label="Primeiro dígito" required>
+      <input class="otp-input" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Segundo dígito" required>
+      <input class="otp-input" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Terceiro dígito" required>
+      <input class="otp-input" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Quarto dígito" required>
+      <input class="otp-input" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Quinto dígito" required>
+      <input class="otp-input" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Sexto dígito" required>
+    </div>
+
+  <div class="timer-bar-wrap">
+    <div class="timer-bar" id="timerBar"></div>
+  </div>
+  <p class="timer-text">Código válido por <span class="timer-text__count" id="timerCount">30s</span></p>
+
+    <p class="form-feedback" id="twofa-feedback" role="status" aria-live="polite"></p>
+    <button class="btn-primary" type="submit">Verificar e acessar</button>
+  </form>
+  <a href="/login" class="back-link">Voltar ao login</a>
+
+</div>
+
+<script th:src="@{/js/twofa.js}" defer></script>
+
+</body>
+</html>
