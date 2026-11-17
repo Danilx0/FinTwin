@@ -3,6 +3,7 @@ package FinTwin.EGR.demo.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -12,13 +13,20 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private static final String SECRET_STRING = "FinTwinSecretKeyForJwtAuthenticationTokensMustBeAtLeast256BitsLong2026FinTwinSecure";
+    /** HS512 precisa de uma chave de pelo menos 64 bytes. */
+    private static final int TAMANHO_MINIMO_SEGREDO = 64;
     private static final long EXPIRACAO_MS = 15 * 60 * 1000;
 
     private final SecretKey chaveAssinatura;
 
-    public JwtService() {
-        this.chaveAssinatura = Keys.hmacShaKeyFor(SECRET_STRING.getBytes(StandardCharsets.UTF_8));
+    /** O segredo vem da variavel de ambiente JWT_SECRET (fintwin.jwt.secret no application.properties). */
+    public JwtService(@Value("${fintwin.jwt.secret}") String segredo) {
+        byte[] bytes = segredo.getBytes(StandardCharsets.UTF_8);
+        if (bytes.length < TAMANHO_MINIMO_SEGREDO) {
+            throw new IllegalStateException("JWT_SECRET precisa ter pelo menos " + TAMANHO_MINIMO_SEGREDO
+                    + " caracteres; o valor atual tem " + bytes.length + ".");
+        }
+        this.chaveAssinatura = Keys.hmacShaKeyFor(bytes);
     }
 
     public String gerarToken(String email) {

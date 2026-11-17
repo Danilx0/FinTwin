@@ -1,0 +1,12 @@
+# So o necessario para compilar entra na imagem.
+.git
+.metadata
+**/target
+**/.settings
+**/.classpath
+**/.project
+**/.idea
+**/*.iml
+.vscode
+.env
+*.dump
