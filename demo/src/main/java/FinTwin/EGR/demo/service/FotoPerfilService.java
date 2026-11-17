@@ -67,7 +67,7 @@ public class FotoPerfilService {
         byte[] imagem = processar(arquivo);
         LocalDateTime agora = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
 
-        FotoPerfil foto = fotoPerfilRepository.findById(usuarioId).orElseGet(() -> new FotoPerfil(usuarioId));
+        FotoPerfil foto = fotoPerfilRepository.findById(usuarioId).orElseGet(() -> new FotoPerfil(usuario));
         foto.substituir(imagem, TIPO_SAIDA, agora);
         fotoPerfilRepository.save(foto);
 

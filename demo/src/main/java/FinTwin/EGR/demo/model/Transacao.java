@@ -1,5 +1,7 @@
 package FinTwin.EGR.demo.model;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import FinTwin.EGR.demo.model.enums.CategoriaTransacao;
 import FinTwin.EGR.demo.model.enums.TipoTransacao;
 import jakarta.persistence.Column;
@@ -20,10 +22,12 @@ public class Transacao extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "usuario_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "conta_bancaria_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private ContaBancaria contaBancaria;
 
     @Column(nullable = false, length = 200)
