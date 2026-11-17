@@ -82,9 +82,12 @@ function renderizarLista() {
 
   gemeosSalvos.forEach(gemeo => {
     const final = gemeo.pontosProjecao?.at(-1);
+    const item = criarElemento('div', 'scenario-item');
+    item.setAttribute('role', 'listitem');
+    item.dataset.gemeoId = gemeo.id;
+
     const botao = criarElemento('button', 'scenario');
     botao.type = 'button';
-    botao.setAttribute('role', 'listitem');
     botao.setAttribute('aria-pressed', String(gemeo.id === gemeoSelecionadoId));
     botao.append(
       criarElemento('span', 'scenario__name', gemeo.nomeCenario),
@@ -92,8 +95,69 @@ function renderizarLista() {
       criarElemento('span', 'scenario__value', final ? formatarMoedaCompacta(final.patrimonioProjetado) : '—')
     );
     botao.addEventListener('click', () => selecionarGemeo(gemeo.id));
-    listaGemeos.append(botao);
+
+    const excluir = criarElemento('button', 'scenario__excluir');
+    excluir.type = 'button';
+    excluir.setAttribute('aria-label', `Excluir o cenário ${gemeo.nomeCenario}`);
+    excluir.title = 'Excluir cenário';
+    excluir.innerHTML = '<svg width="15" height="15" fill="none" viewBox="0 0 16 16" aria-hidden="true">'
+      + '<path d="M2.5 4h11M6.5 4V2.75h3V4M4 4l.6 9.25h6.8L12 4M6.75 6.75v4M9.25 6.75v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    excluir.addEventListener('click', () => pedirConfirmacaoExclusao(item, gemeo));
+
+    item.append(botao, excluir);
+    listaGemeos.append(item);
   });
+}
+
+function pedirConfirmacaoExclusao(item, gemeo) {
+  listaGemeos.querySelectorAll('.scenario-confirmar').forEach(caixa => caixa.closest('.scenario-item')?.classList.remove('scenario-item--confirmando'));
+  listaGemeos.querySelectorAll('.scenario-confirmar').forEach(caixa => caixa.remove());
+
+  const caixa = criarElemento('div', 'scenario-confirmar');
+  caixa.setAttribute('role', 'group');
+  caixa.setAttribute('aria-label', `Confirmar exclusão de ${gemeo.nomeCenario}`);
+  const texto = criarElemento('span', 'scenario-confirmar__texto', 'Excluir este cenário? Não dá para desfazer.');
+  const confirmar = criarElemento('button', 'btn-sm btn-sm--perigo', 'Excluir');
+  confirmar.type = 'button';
+  const cancelar = criarElemento('button', 'btn-sm scenario-confirmar__cancelar', 'Cancelar');
+  cancelar.type = 'button';
+  const botoes = criarElemento('div', 'scenario-confirmar__botoes');
+  botoes.append(confirmar, cancelar);
+  caixa.append(texto, botoes);
+
+  const fechar = () => {
+    caixa.remove();
+    item.classList.remove('scenario-item--confirmando');
+    item.querySelector('.scenario__excluir')?.focus();
+  };
+  cancelar.addEventListener('click', fechar);
+  caixa.addEventListener('keydown', evento => {
+    if (evento.key === 'Escape') fechar();
+  });
+  confirmar.addEventListener('click', () => excluirGemeo(gemeo, confirmar, cancelar));
+
+  item.classList.add('scenario-item--confirmando');
+  item.append(caixa);
+  cancelar.focus();
+}
+
+async function excluirGemeo(gemeo, confirmar, cancelar) {
+  confirmar.disabled = true;
+  cancelar.disabled = true;
+  const posicao = gemeosSalvos.findIndex(item => item.id === gemeo.id);
+  try {
+    await requisicaoApi(`/api/inteligencia/gemeo-digital/projecoes/${gemeo.id}`, { method: 'DELETE' });
+    if (gemeoSelecionadoId === gemeo.id) gemeoSelecionadoId = null;
+    await carregarGemeos();
+    mostrarFeedback(feedbackGemeo, `Cenário "${gemeo.nomeCenario}" excluído.`);
+    // Mantem o foco perto de onde estava: o cenario seguinte, ou o anterior se era o ultimo.
+    const itens = listaGemeos.querySelectorAll('.scenario');
+    (itens[Math.min(posicao, itens.length - 1)] || formularioGemeo.querySelector('input'))?.focus();
+  } catch (erro) {
+    confirmar.disabled = false;
+    cancelar.disabled = false;
+    mostrarFeedback(feedbackGemeo, erro.message, true);
+  }
 }
 
 function selecionarGemeo(id) {

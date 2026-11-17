@@ -3,6 +3,7 @@ package FinTwin.EGR.demo.service;
 import FinTwin.EGR.demo.model.GemeoDigital;
 import FinTwin.EGR.demo.model.Usuario;
 import FinTwin.EGR.demo.dto.PontoProjecaoDTO;
+import FinTwin.EGR.demo.exception.RecursoNaoEncontradoException;
 import FinTwin.EGR.demo.exception.RegraNegocioException;
 import FinTwin.EGR.demo.repository.GemeoDigitalRepository;
 import tools.jackson.core.JacksonException;
@@ -96,5 +97,16 @@ public class GemeoDigitalService {
     }
     public List<GemeoDigital> listarPorUsuario(Long usuarioId) {
         return gemeoDigitalRepository.findByUsuarioId(usuarioId);
+    }
+
+    @Transactional(readOnly = true)
+    public GemeoDigital buscar(Long gemeoId) {
+        return gemeoDigitalRepository.findById(gemeoId)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Projeção não encontrada."));
+    }
+
+    @Transactional
+    public void excluir(Long gemeoId) {
+        gemeoDigitalRepository.delete(buscar(gemeoId));
     }
 }

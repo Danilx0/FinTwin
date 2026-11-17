@@ -185,13 +185,6 @@
   stroke-width: 2;
 }
 
-.projection-chart .rotulo-final {
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  fill: var(--cyan);
-}
-
 .year-table {
   margin-top: 20px;
   border-top: 1px solid var(--border);
@@ -287,4 +280,63 @@
   .projection-chart {
     aspect-ratio: 4 / 3;
   }
+}
+
+/* ---------- Excluir cenario ---------- */
+.scenario-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.scenario__excluir {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.scenario__excluir:hover,
+.scenario-item--confirmando .scenario__excluir {
+  color: var(--negative);
+  border-color: rgba(255, 107, 122, 0.35);
+  background: rgba(255, 107, 122, 0.06);
+}
+
+.scenario__excluir:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+.scenario-confirmar {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255, 107, 122, 0.06);
+  border: 1px solid rgba(255, 107, 122, 0.25);
+  border-radius: var(--radius-sm);
+}
+
+.scenario-confirmar__texto {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.scenario-confirmar__botoes {
+  display: flex;
+  gap: 6px;
+}
+
+.scenario-confirmar__cancelar {
+  color: var(--text-secondary);
+  border-color: var(--border);
 }
