@@ -23,37 +23,65 @@
 
     <div class="visual-panel__headline">
       <h1>Seu <em>gêmeo digital</em> financeiro começa aqui.</h1>
-      <p>Projete seu patrimônio por até 35 anos, simule crises e tome decisões com inteligência comportamental.</p>
+      <p>Veja até onde seu patrimônio pode chegar em 35 anos, teste sua reserva contra uma crise e segure as compras por impulso antes de pagar.</p>
     </div>
 
-    <div class="visual-stats">
-      <div class="visual-stats__item">
-        <span class="visual-stats__value">35</span>
-        <span class="visual-stats__label">anos de projeção</span>
-      </div>
-      <div class="visual-stats__item">
-        <span class="visual-stats__value">95%</span>
-        <span class="visual-stats__label">precisão da IA</span>
-      </div>
-      <div class="visual-stats__item">
-        <span class="visual-stats__value">6h</span>
-        <span class="visual-stats__label">ciclo de sync</span>
-      </div>
-    </div>
+    <!-- Projecao de exemplo calculada com a mesma formula do Gemeo Digital:
+         R$ 10.000 iniciais + R$ 500/mes a 8% ao ano (taxa mensal = 8/12 %), por 35 anos. -->
+    <figure class="visual-preview" aria-label="Exemplo de projeção do Gêmeo Digital: com R$ 10 mil iniciais e R$ 500 por mês a 8% ao ano, o patrimônio chega a cerca de R$ 1,31 milhão em 35 anos, tendo R$ 220 mil investidos.">
+      <figcaption class="visual-preview__topo">
+        <span class="visual-preview__titulo">Projeção do Gêmeo Digital</span>
+        <span class="visual-preview__selo">Exemplo</span>
+      </figcaption>
 
-    <svg class="visual-chart" viewBox="0 0 300 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stop-color="#3DF1FF" stop-opacity="0.3"/>
-          <stop offset="100%" stop-color="#3DF1FF" stop-opacity="0"/>
-        </linearGradient>
-      </defs>
-      <path d="M0 100 C30 95 50 80 80 70 C110 60 130 40 160 30 C190 20 220 15 260 8 L260 120 L0 120 Z" fill="url(#cg)"/>
-      <path d="M0 100 C30 95 50 80 80 70 C110 60 130 40 160 30 C190 20 220 15 260 8" stroke="#3DF1FF" stroke-width="2" stroke-linecap="round"/>
-      <circle cx="260" cy="8"  r="4" fill="#3DF1FF"/>
-      <circle cx="160" cy="30" r="3" fill="#B7E7FC" opacity="0.8"/>
-      <circle cx="80"  cy="70" r="3" fill="#B7E7FC" opacity="0.8"/>
-    </svg>
+      <div class="visual-preview__valor">R$ 1,31 mi <span>em 35 anos</span></div>
+      <p class="visual-preview__premissa">R$ 10 mil iniciais + R$ 500 por mês, rendendo 8% ao ano</p>
+
+      <div class="visual-preview__grafico" aria-hidden="true">
+        <svg viewBox="0 0 400 150" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="preview-area" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#3DF1FF" stop-opacity="0.28"/>
+              <stop offset="100%" stop-color="#3DF1FF" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <line class="visual-preview__grade" x1="0" y1="45" x2="400" y2="45"/>
+          <line class="visual-preview__grade" x1="0" y1="91" x2="400" y2="91"/>
+          <line class="visual-preview__grade" x1="0" y1="137" x2="400" y2="137"/>
+          <path class="visual-preview__area" fill="url(#preview-area)" d="M0.0 137.1 L11.4 136.4 L22.9 135.7 L34.3 134.9 L45.7 134.0 L57.1 133.1 L68.6 132.1 L80.0 131.0 L91.4 129.9 L102.9 128.6 L114.3 127.2 L125.7 125.8 L137.1 124.2 L148.6 122.4 L160.0 120.5 L171.4 118.5 L182.9 116.3 L194.3 113.9 L205.7 111.3 L217.1 108.5 L228.6 105.5 L240.0 102.2 L251.4 98.6 L262.9 94.7 L274.3 90.6 L285.7 86.0 L297.1 81.1 L308.6 75.8 L320.0 70.1 L331.4 63.8 L342.9 57.1 L354.3 49.8 L365.7 41.9 L377.1 33.3 L388.6 24.0 L400.0 14.0 L400 150 L0 150 Z"/>
+          <path class="visual-preview__investido" d="M0 137.1 L400 117.2"/>
+          <path class="visual-preview__linha" pathLength="1" d="M0.0 137.1 L11.4 136.4 L22.9 135.7 L34.3 134.9 L45.7 134.0 L57.1 133.1 L68.6 132.1 L80.0 131.0 L91.4 129.9 L102.9 128.6 L114.3 127.2 L125.7 125.8 L137.1 124.2 L148.6 122.4 L160.0 120.5 L171.4 118.5 L182.9 116.3 L194.3 113.9 L205.7 111.3 L217.1 108.5 L228.6 105.5 L240.0 102.2 L251.4 98.6 L262.9 94.7 L274.3 90.6 L285.7 86.0 L297.1 81.1 L308.6 75.8 L320.0 70.1 L331.4 63.8 L342.9 57.1 L354.3 49.8 L365.7 41.9 L377.1 33.3 L388.6 24.0 L400.0 14.0"/>
+        </svg>
+        <span class="visual-preview__ponto"></span>
+      </div>
+
+      <div class="visual-preview__eixo" aria-hidden="true">
+        <span>Hoje</span>
+        <span style="left:28.6%">10 anos</span>
+        <span style="left:57.1%">20 anos</span>
+        <span>35 anos</span>
+      </div>
+
+      <div class="visual-preview__legenda">
+        <span class="visual-preview__chave visual-preview__chave--patrimonio">Patrimônio</span>
+        <span class="visual-preview__chave visual-preview__chave--investido">Dinheiro investido: R$ 220 mil</span>
+      </div>
+    </figure>
+
+    <ul class="visual-stats">
+      <li class="visual-stats__item">
+        <span class="visual-stats__value">35 anos</span>
+        <span class="visual-stats__label">de projeção do patrimônio</span>
+      </li>
+      <li class="visual-stats__item">
+        <span class="visual-stats__value">24 h</span>
+        <span class="visual-stats__label">de quarentena antes de comprar</span>
+      </li>
+      <li class="visual-stats__item">
+        <span class="visual-stats__value">5.000</span>
+        <span class="visual-stats__label">transações por relatório</span>
+      </li>
+    </ul>
   </div>
 
   <div class="form-panel">
@@ -65,7 +93,7 @@
 
     <form id="form-login">
       <h2 class="form-title">Bem-vindo de volta</h2>
-      <p class="form-subtitle">Acesse seu gêmeo digital financeiro.</p>
+      <p class="form-subtitle">Entre para ver suas contas, projeções e relatórios.</p>
 
       <div class="field-group">
         <div class="field">
@@ -85,19 +113,16 @@
           <circle cx="8" cy="8" r="7" stroke="#3DF1FF" stroke-width="1.5"/>
           <path d="M8 7v4M8 5h.01" stroke="#3DF1FF" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
-        Em caso de primeiro acessoc ative a verificação em dois fatores no perfil de usuário.
+        Se a verificação em duas etapas estiver ativa, o código do seu aplicativo autenticador será pedido depois da senha.
       </div>
 
       <p class="form-feedback" id="login-feedback" role="status" aria-live="polite"></p>
       <button class="btn-primary" type="submit">Entrar na conta</button>
-
-
-
     </form>
 
     <form id="form-cadastro" style="display:none">
       <h2 class="form-title">Criar sua conta</h2>
-      <p class="form-subtitle">Configure seu perfil de gestão financeira.</p>
+      <p class="form-subtitle">Leva menos de um minuto. Depois, ative a verificação em duas etapas no seu perfil.</p>
 
       <div class="field-group">
         <div class="field">
@@ -122,7 +147,7 @@
       </div>
 
       <p class="form-feedback" id="cadastro-feedback" role="status" aria-live="polite"></p>
-      <button class="btn-primary" type="submit">Criar conta grátis</button>
+      <button class="btn-primary" type="submit">Criar conta</button>
     </form>
 
   </div>
