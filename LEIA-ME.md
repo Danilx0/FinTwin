@@ -1,84 +1,108 @@
-# FinTwin — Leia-Me de Contexto do Projeto
+# FinTwin
 
-## O que é o FinTwin
+Aplicativo web de gestão financeira pessoal cujo destaque é o **Gêmeo Digital**: uma projeção do patrimônio do usuário em até 35 anos. Junto com ela, o FinTwin reúne contas, transações categorizadas automaticamente, simulação de crises, uma trava contra compras por impulso e exportação de relatórios.
 
-FinTwin é um aplicativo de gestão financeira pessoal e familiar cujo diferencial é o **Gêmeo Digital (Digital Twin)**: uma projeção preditiva do patrimônio líquido do usuário em horizontes de até 35 anos. O sistema combina integração bancária via Open Finance, categorização automática de despesas por IA e ferramentas de economia comportamental para transformar dados financeiros em decisões conscientes.
-
-Projeto acadêmico desenvolvido na Universidade Católica do Salvador (UCSAL) — Engenharia de Software.
+Projeto acadêmico de Engenharia de Software da Universidade Católica do Salvador (UCSAL).
 
 ---
 
-## Perfis de Usuário
+## Tecnologias
 
-| Perfil | Descrição |
+| Camada | O que é usado |
 |---|---|
-| Usuário Individual | Pessoa física que gerencia finanças próprias |
-| Usuário Familiar | Gerencia finanças de um grupo familiar |
-| Consultor | Profissional que assessora clientes dentro da plataforma |
-| Administrador do Sistema | Gerencia a operação e configurações globais |
+| Linguagem | Java 21 |
+| Framework | Spring Boot 4 (Web, Data JPA, Security, Validation, Actuator) |
+| Telas | Thymeleaf, HTML, CSS e JavaScript puro (sem framework de front-end) |
+| Banco de dados | PostgreSQL (hospedado na Neon) e H2 em memória nos testes |
+| Autenticação | JWT (token de 15 minutos) e senhas com BCrypt |
+| Dois fatores | TOTP, compatível com Google Authenticator e similares, com QR Code gerado pelo ZXing |
+| Build | Maven (wrapper incluído no projeto) |
 
 ---
 
-## Funcionalidades Principais
+## Funcionalidades
 
-### Acesso e Segurança
-- **UC01 – Cadastro**: criação de conta e perfil de gestão
-- **UC02 – Login**: autenticação com credenciais
-- **UC03 – 2FA (TOTP)**: validação obrigatória em menos de 300 ms
-- **UC04 – Recuperar Senha**: envio seguro para e-mail cadastrado
-- **UC05 – Gerenciar Perfil**: atualização de dados cadastrais e foto de perfil
+### Acesso e segurança
+- **Cadastro e login**: e-mail e senha, com o perfil Individual ou Familiar escolhido no cadastro.
+- **Verificação em duas etapas (2FA)**: opcional, ativada no perfil lendo um QR Code com um aplicativo autenticador. Com ela ativa, o login pede o código de 6 dígitos.
+- **Recuperação de senha**: gera um código de redefinição. Como o projeto não tem envio de e-mail, o código aparece na própria tela (modo de demonstração).
+- **Sessão**: o token de acesso vale 15 minutos a partir do login. Depois disso, ou ao fechar a aba, é preciso entrar de novo.
+- **Direito ao esquecimento (LGPD)**: o usuário pode pedir a exclusão da conta no perfil. O acesso é bloqueado na hora, e uma rotina que roda a cada 15 minutos apaga todos os dados dele em até 24 horas.
 
-### Core Business
-- **UC06 – Sincronizar Contas Bancárias**: consolidação via Open Finance a cada 6 horas
-- **UC07 – Categorizar Transações com IA**: classificação automática de despesas com meta de 95% de precisão após 100 interações de remapeamento
-- **UC08 – Gêmeo Digital (Projeção)**: projeção gráfica do patrimônio líquido em até 35 anos
-- **UC09 – Teste de Estresse**: simulação de cenários de crise (ex.: redução de 50% da renda)
-- **UC10 – Trava de Impulso**: "Modo Quarentena" com espera obrigatória de 24 h para gastos manuais
-- **UC11 – Exportar Relatórios**: download de relatórios consolidados com até 5.000 registros
+### Perfil
+- Edição de nome, telefone e fuso horário.
+- Foto de perfil em JPG ou PNG de até 5 MB, recortada em quadrado e reduzida pelo servidor.
+- Ativação e desativação do 2FA e o pedido de exclusão da conta.
 
----
+### Dashboard
+- Indicadores do mês: saldo total das contas, receitas, despesas e quantidade de contas.
+- **Contas**: o usuário cadastra as contas (corrente, poupança ou investimento) e informa o saldo atual. O saldo pode ser atualizado a qualquer momento, e a tela mostra quando ele foi informado. Só a conta corrente aceita saldo negativo. Ao remover uma conta, as transações dela são mantidas.
+- Resumo das transações recentes, das despesas por categoria, da última projeção do Gêmeo Digital e dos gastos em quarentena.
 
-## Arquitetura — Módulos Principais
+### Transações
+- Lançamento de receitas e despesas.
+- **Categorização automática**: ao lançar, o sistema sugere a categoria pela descrição (por exemplo, "mercado" vira Alimentação e "uber" vira Transporte). Categorias: Alimentação, Moradia, Transporte, Saúde, Educação, Lazer, Vestuário, Investimento, Salário e Serviços.
+- A categoria sugerida pode ser corrigida. Cada correção fica registrada, e o sistema calcula a taxa de acerto da sugestão automática.
+- Listagem com filtros por período (este mês, últimos 90 dias ou tudo), por tipo e por busca na descrição.
 
-### Módulo de Acesso e Segurança
-Centraliza autenticação e conformidade com a LGPD. Sessões expiram após **15 minutos**. Funcionalidade de "Esquecimento" (exclusão de dados) executada em até **24 horas**.
+### Gêmeo Digital
+- Projeção do patrimônio ano a ano, de 1 a 35 anos, a partir do patrimônio inicial, do aporte mensal e da taxa de rendimento anual, com juros compostos mensais.
+- Gráfico da evolução do patrimônio comparada ao dinheiro investido, com o patrimônio final, o total investido e o ganho com rendimentos.
+- Cada projeção fica salva como um cenário para comparação e pode ser excluída.
 
-### Módulo Core e Inteligência
-Executa algoritmos de categorização de despesas e projeção preditiva (Gêmeo Digital). Tempo máximo de processamento complexo: **4 segundos**.
+### Teste de Estresse
+- Simula uma crise a partir da renda, das despesas e da reserva de emergência do usuário, com a queda da renda (%) e a duração da crise (em meses).
+- Mostra o déficit mensal, o impacto no patrimônio e por quantos meses a reserva aguenta, com um gráfico mês a mês do que fica coberto e do que fica sem cobertura.
 
-### Módulo de Gestão e Dashboard
-Entrega a interface responsiva (320 px a 3440 px), painéis customizáveis, suporte a temas Claro/Escuro e acessibilidade **WCAG 2.1 AA**.
+### Trava de Impulso
+- Um gasto não planejado (item, valor e motivo) entra em **quarentena de 24 horas** antes de virar despesa, com uma contagem regressiva na tela.
+- Passado o prazo, o usuário decide: **liberar** (a despesa é registrada nas transações) ou **cancelar** (nada é gasto).
+- A tela mostra o total em espera e o histórico das decisões.
 
----
+### Relatórios
+- Exportação das transações em **CSV** (separado por ponto e vírgula, abre direto no Excel), com até **5.000 registros** por arquivo.
+- Resumo antes de exportar: quantidade de transações, período coberto e saldo líquido.
+- Cada exportação fica registrada no histórico do usuário.
 
-## Integrações Externas
-
-- **Open Finance**: sincronização de dados bancários de múltiplas instituições
-- **Serviço de E-mail**: envio de recuperação de senha e notificações
-- **Autenticador TOTP**: geração e validação de códigos 2FA
-
----
-
-## Requisitos Não-Funcionais Relevantes
-
-| Categoria | Detalhe |
-|---|---|
-| Segurança | 2FA obrigatório; criptografia de dados; conformidade LGPD |
-| Desempenho | Validação 2FA < 300 ms; processamento IA < 4 s |
-| Disponibilidade | Sincronização bancária a cada 6 h |
-| Acessibilidade | WCAG 2.1 AA; responsividade 320 px – 3440 px |
-| Privacidade | Exclusão de dados ("Esquecimento") em até 24 h |
+### Família (prévia)
+- Página demonstrativa de como seria a gestão de um grupo familiar: membros, meta compartilhada, aprovação de gastos e permissões, com visões de Responsável e de Membro.
+- É apenas visual: usa dados de exemplo e não grava nada no banco.
 
 ---
 
-## Como Rodar a Aplicação
+## Estrutura do Projeto
 
-### Pré-requisitos
-- **Java 21** (JDK)
-- Acesso a um banco **PostgreSQL**. Em produção o banco fica na **Neon** (Postgres gerenciado, região AWS São Paulo).
-- O Maven não precisa ser instalado: o projeto usa o wrapper (`mvnw` / `mvnw.cmd`) que fica na pasta `demo/`.
+```
+FinTwin/
+└── demo/                                   projeto Spring Boot
+    ├── pom.xml
+    ├── mvnw / mvnw.cmd                     Maven wrapper
+    └── src/
+        ├── main/java/FinTwin/EGR/demo/
+        │   ├── controller/                 páginas e API REST (/api/...)
+        │   ├── service/                    regras de negócio
+        │   ├── model/                      entidades (tabelas do banco)
+        │   ├── repository/                 acesso ao banco (Spring Data JPA)
+        │   ├── dto/                        dados de entrada e saída da API
+        │   ├── security/                   JWT, 2FA (TOTP) e configuração de segurança
+        │   └── exception/                  tratamento de erros da API
+        ├── main/resources/
+        │   ├── templates/                  telas (Thymeleaf)
+        │   ├── static/css, static/js       estilos e scripts de cada tela
+        │   └── application.properties      configuração
+        └── test/                           testes automatizados (JUnit + H2)
+```
 
-### Variáveis de ambiente
+---
+
+## Como Rodar Localmente
+
+### 1. Pré-requisitos
+- **Java 21** (JDK) instalado.
+- Acesso a um banco **PostgreSQL** com as tabelas do FinTwin: o banco da Neon ou uma cópia no PostgreSQL local.
+- Não é preciso instalar o Maven: o projeto usa o wrapper (`mvnw` / `mvnw.cmd`) da pasta `demo/`.
+
+### 2. Variáveis de ambiente
 
 A aplicação lê a conexão com o banco e o segredo do login de variáveis de ambiente (veja `demo/src/main/resources/application.properties`):
 
@@ -86,35 +110,38 @@ A aplicação lê a conexão com o banco e o segredo do login de variáveis de a
 |---|---|---|---|
 | `DB_URL` | Sim, para usar a Neon | `jdbc:postgresql://ep-xxxx.sa-east-1.aws.neon.tech/neondb?sslmode=require` | `jdbc:postgresql://localhost:5432/fintwin` |
 | `DB_USER` | Sim, para usar a Neon | `neondb_owner` | `fintwin_app` |
-| `DB_PASSWORD` | Sempre | (senha do banco) | — |
+| `DB_PASSWORD` | Sempre | senha do banco | — |
 | `JWT_SECRET` | Sempre | texto aleatório com **pelo menos 64 caracteres** | — (a aplicação não sobe sem ele) |
-| `PORT` | Não | `10000` (o Render define sozinho) | `8080` |
 
-Como montar os valores a partir da URL de conexão da Neon (`postgresql://USUARIO:SENHA@SERVIDOR/BANCO?sslmode=require`):
-- `DB_URL`: começa com `jdbc:postgresql://`, seguido de `SERVIDOR/BANCO?sslmode=require`. Usuário e senha **não** entram na URL.
+Para montar os valores a partir da URL de conexão da Neon (`postgresql://USUARIO:SENHA@SERVIDOR/BANCO?sslmode=require`):
+- `DB_URL`: `jdbc:postgresql://` seguido de `SERVIDOR/BANCO?sslmode=require`. Usuário e senha **não** entram na URL.
 - `DB_USER`: o `USUARIO` da URL.
 - `DB_PASSWORD`: a `SENHA` da URL.
-- Use a URL de conexão **direta**, com *Connection pooling* desligado (o servidor não tem `-pooler` no nome).
+- Use a conexão **direta**, com *Connection pooling* desligado (o servidor não tem `-pooler` no nome).
 
-`JWT_SECRET` assina os tokens de login: quem conhece o valor consegue criar um token válido, então ele deve ser longo, aleatório e diferente em cada ambiente. Para gerar um no PowerShell:
+Para usar o PostgreSQL local, basta definir `DB_PASSWORD` e `JWT_SECRET`: a URL e o usuário padrão já apontam para `localhost:5432/fintwin` com o usuário `fintwin_app`.
+
+O `JWT_SECRET` assina os tokens de login: quem conhece o valor consegue criar um token válido, então ele deve ser longo e aleatório. Para gerar um no PowerShell:
 
 ```powershell
 -join ((48..57) + (65..90) + (97..122) | Get-Random -Count 62) + -join ((48..57) + (65..90) + (97..122) | Get-Random -Count 62)
 ```
 
-Trocar o `JWT_SECRET` desconecta todos os usuários logados (os tokens antigos deixam de valer).
+Trocar o `JWT_SECRET` desconecta todos os usuários logados.
 
-> As senhas nunca devem ser escritas no código nem em arquivos versionados. O arquivo `.env` já está no `.gitignore`.
+> Senhas e segredos nunca devem ser escritos no código nem em arquivos versionados. O arquivo `.env` já está no `.gitignore`.
 
-### Tabelas do banco
+### 3. Executar
 
-A aplicação usa um banco que **já existe**, com as tabelas criadas (o da Neon e uma cópia no PostgreSQL local). Ela não cria nem altera tabelas: ao iniciar, o Hibernate só **confere** se as tabelas batem com as entidades Java (`ddl-auto=validate`) e para com erro se faltar alguma tabela ou coluna. Qualquer mudança de estrutura deve ser feita direto no banco (por exemplo, no SQL Editor da Neon) e refletida na entidade correspondente em `demo/src/main/java/FinTwin/EGR/demo/model/`.
+**Pelo Eclipse**
+1. *File → Import → Maven → Existing Maven Projects* e selecione a pasta `demo/`.
+2. Em *Run → Run Configurations*, crie uma configuração para a classe `FinTwin.EGR.demo.DemoApplication`.
+3. Na aba *Environment*, cadastre `DB_URL`, `DB_USER`, `DB_PASSWORD` e `JWT_SECRET` e clique em *Apply*.
+4. Clique em *Run*.
 
-### Executando
+Ao trocar alguma variável, pare a aplicação (*Terminate*) e rode de novo: o reinício automático do DevTools não relê as variáveis.
 
-**Pelo Eclipse:** importe a pasta `demo/` como projeto Maven. Em *Run Configurations → Environment*, cadastre `DB_URL`, `DB_USER`, `DB_PASSWORD` e `JWT_SECRET` e rode a classe principal como *Spring Boot App* / *Java Application*. Ao trocar as variáveis, pare a aplicação (*Terminate*) e rode de novo: o reinício automático do DevTools não relê as variáveis.
-
-**Pelo terminal** (dentro de `demo/`):
+**Pelo terminal** (dentro da pasta `demo/`)
 
 ```powershell
 # Windows (PowerShell)
@@ -134,9 +161,11 @@ export JWT_SECRET="segredo-aleatorio-com-pelo-menos-64-caracteres"
 ./mvnw spring-boot:run
 ```
 
-A aplicação sobe em **http://localhost:8080**. Para conferir se está no ar, use `http://localhost:8080/actuator/health`, que deve responder `{"status":"UP"}`.
+### 4. Acessar
+- Aplicação: **http://localhost:8080**. Crie uma conta na tela inicial e faça login.
+- Para conferir se está no ar: **http://localhost:8080/actuator/health**, que deve responder `{"status":"UP"}`.
 
-### Testes
+### 5. Testes
 
 ```bash
 ./mvnw test
@@ -144,31 +173,25 @@ A aplicação sobe em **http://localhost:8080**. Para conferir se está no ar, u
 
 Os testes usam um banco **H2 em memória** (configurado em `demo/src/test/resources/application.properties`) e não precisam das variáveis acima nem acessam a Neon.
 
-### Publicando no Render
+### Problemas comuns
 
-A raiz do repositório tem um `Dockerfile` que compila a aplicação e gera uma imagem pronta para rodar.
+| Mensagem ao iniciar | Causa |
+|---|---|
+| `Could not resolve placeholder 'JWT_SECRET'` | A variável `JWT_SECRET` não foi definida. |
+| `JWT_SECRET precisa ter pelo menos 64 caracteres` | O segredo é curto demais. |
+| `'url' must start with "jdbc"` | O `DB_URL` não começa com `jdbc:postgresql://` (ou tem espaço ou aspas antes). |
+| `password authentication failed` | `DB_USER` ou `DB_PASSWORD` incorretos. |
+| `Schema-validation: missing table` ou `missing column` | O banco não tem as tabelas que as entidades Java esperam. |
 
-1. No [Render](https://render.com), crie um **New → Web Service** ligado a este repositório, na branch `main`, com **Language: Docker**. A raiz do repositório é o diretório certo, pois é onde está o `Dockerfile`.
-2. Em **Environment**, cadastre `DB_URL`, `DB_USER`, `DB_PASSWORD` (os mesmos da Neon) e `JWT_SECRET` (um valor novo, diferente do usado no Eclipse).
-3. Em **Health Check Path**, informe `/actuator/health`.
+### Sobre o banco
 
-Cada envio para a `main` gera uma nova publicação. No plano gratuito, o serviço "dorme" após 15 minutos sem acesso, e a primeira visita depois disso leva de 30 a 60 segundos.
-
----
-
-## Estrutura de Modelagem Produzida
-
-- Diagramas de Casos de Uso (Acesso e Core Business)
-- Diagrama de Contexto e Fronteiras de Módulos
-- Diagrama de Classes (Visão Macro — herança, sobrecarga, polimorfismo)
-- Diagramas de Atividades (Visão Geral, Cadastro, Core Business)
-- Diagramas de Sequência (Visão Geral, Cadastro, Integrações e Projeção do Gêmeo Digital)
+A aplicação usa um banco que **já existe**, com as tabelas criadas. Ela não cria nem altera tabelas: ao iniciar, o Hibernate só **confere** se as tabelas batem com as entidades Java (`ddl-auto=validate`). Uma mudança de estrutura deve ser feita direto no banco (por exemplo, no SQL Editor da Neon) e refletida na entidade correspondente em `demo/src/main/java/FinTwin/EGR/demo/model/`.
 
 ---
 
-## Referências
+## Créditos
 
-- Documento base: *Documentação de Arquitetura e Modelagem de Casos de Uso — FinTwin* (Agosto 2026)
+- Documento base: *Documentação de Arquitetura e Modelagem de Casos de Uso — FinTwin* (agosto de 2026)
 - Autor: Leandro Garcia Magalhães Cerqueira
 - Orientador: Elton Figueiredo da Silva
 - Instituição: UCSAL — Universidade Católica do Salvador
