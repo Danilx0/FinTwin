@@ -71,6 +71,69 @@ Entrega a interface responsiva (320 px a 3440 px), painéis customizáveis, supo
 
 ---
 
+## Como Rodar a Aplicação
+
+### Pré-requisitos
+- **Java 21** (JDK)
+- Acesso a um banco **PostgreSQL**. Em produção o banco fica na **Neon** (Postgres gerenciado, região AWS São Paulo).
+- O Maven não precisa ser instalado: o projeto usa o wrapper (`mvnw` / `mvnw.cmd`) que fica na pasta `demo/`.
+
+### Variáveis de ambiente do banco
+
+A aplicação lê a conexão com o banco de três variáveis de ambiente (veja `demo/src/main/resources/application.properties`):
+
+| Variável | Obrigatória | Exemplo | Padrão, se não for definida |
+|---|---|---|---|
+| `DB_URL` | Sim, para usar a Neon | `jdbc:postgresql://ep-xxxx.sa-east-1.aws.neon.tech/neondb?sslmode=require` | `jdbc:postgresql://localhost:5432/fintwin` |
+| `DB_USER` | Sim, para usar a Neon | `neondb_owner` | `fintwin_app` |
+| `DB_PASSWORD` | Sempre | (senha do banco) | — |
+
+Como montar os valores a partir da URL de conexão da Neon (`postgresql://USUARIO:SENHA@SERVIDOR/BANCO?sslmode=require`):
+- `DB_URL`: começa com `jdbc:postgresql://`, seguido de `SERVIDOR/BANCO?sslmode=require`. Usuário e senha **não** entram na URL.
+- `DB_USER`: o `USUARIO` da URL.
+- `DB_PASSWORD`: a `SENHA` da URL.
+- Use a URL de conexão **direta**, com *Connection pooling* desligado (o servidor não tem `-pooler` no nome).
+
+> As senhas nunca devem ser escritas no código nem em arquivos versionados. O arquivo `.env` já está no `.gitignore`.
+
+### Tabelas do banco
+
+A aplicação usa um banco que **já existe**, com as tabelas criadas (o da Neon e uma cópia no PostgreSQL local). Ela não cria nem altera tabelas: ao iniciar, o Hibernate só **confere** se as tabelas batem com as entidades Java (`ddl-auto=validate`) e para com erro se faltar alguma tabela ou coluna. Qualquer mudança de estrutura deve ser feita direto no banco (por exemplo, no SQL Editor da Neon) e refletida na entidade correspondente em `demo/src/main/java/FinTwin/EGR/demo/model/`.
+
+### Executando
+
+**Pelo Eclipse:** importe a pasta `demo/` como projeto Maven. Em *Run Configurations → Environment*, cadastre `DB_URL`, `DB_USER` e `DB_PASSWORD` e rode a classe principal como *Spring Boot App* / *Java Application*. Ao trocar as variáveis, pare a aplicação (*Terminate*) e rode de novo: o reinício automático do DevTools não relê as variáveis.
+
+**Pelo terminal** (dentro de `demo/`):
+
+```powershell
+# Windows (PowerShell)
+$env:DB_URL="jdbc:postgresql://SERVIDOR/neondb?sslmode=require"
+$env:DB_USER="neondb_owner"
+$env:DB_PASSWORD="sua-senha"
+.\mvnw.cmd spring-boot:run
+```
+
+```bash
+# Linux / macOS
+export DB_URL="jdbc:postgresql://SERVIDOR/neondb?sslmode=require"
+export DB_USER="neondb_owner"
+export DB_PASSWORD="sua-senha"
+./mvnw spring-boot:run
+```
+
+A aplicação sobe em **http://localhost:8080**. Para conferir se está no ar, use `http://localhost:8080/actuator/health`, que deve responder `{"status":"UP"}`.
+
+### Testes
+
+```bash
+./mvnw test
+```
+
+Os testes usam um banco **H2 em memória** (configurado em `demo/src/test/resources/application.properties`) e não precisam das variáveis acima nem acessam a Neon.
+
+---
+
 ## Estrutura de Modelagem Produzida
 
 - Diagramas de Casos de Uso (Acesso e Core Business)
