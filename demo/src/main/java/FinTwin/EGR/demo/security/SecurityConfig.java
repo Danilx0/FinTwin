@@ -41,7 +41,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/", "/login", "/2fa", "/recuperar-senha", "/dashboard",
                                 "/gemeo-digital", "/transacoes", "/teste-estresse", "/trava-impulso",
-                                "/relatorios", "/perfil", "/familia", "/css/**", "/js/**", "/images/**", "/favicon.ico"
+                                "/relatorios", "/perfil", "/familia", "/css/**", "/js/**", "/favicon.ico"
                         ).permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
