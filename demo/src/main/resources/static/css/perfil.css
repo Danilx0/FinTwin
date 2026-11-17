@@ -351,8 +351,6 @@
   gap: 16px 20px;
 }
 
-.perfil-campos__inteiro { grid-column: 1 / -1; }
-
 .perfil-campo-curto { max-width: 320px; }
 
 .perfil-painel__rodape {
