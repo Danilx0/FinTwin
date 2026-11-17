@@ -106,19 +106,6 @@ FinTwin/
 
 A aplicação lê a conexão com o banco e o segredo do login de variáveis de ambiente (veja `demo/src/main/resources/application.properties`):
 
-| Variável | Obrigatória | Exemplo | Padrão, se não for definida |
-|---|---|---|---|
-| `DB_URL` | Sim, para usar a Neon | `jdbc:postgresql://ep-xxxx.sa-east-1.aws.neon.tech/neondb?sslmode=require` | `jdbc:postgresql://localhost:5432/fintwin` |
-| `DB_USER` | Sim, para usar a Neon | `neondb_owner` | `fintwin_app` |
-| `DB_PASSWORD` | Sempre | senha do banco | — |
-| `JWT_SECRET` | Sempre | texto aleatório com **pelo menos 64 caracteres** | — (a aplicação não sobe sem ele) |
-
-Para montar os valores a partir da URL de conexão da Neon (`postgresql://USUARIO:SENHA@SERVIDOR/BANCO?sslmode=require`):
-- `DB_URL`: `jdbc:postgresql://` seguido de `SERVIDOR/BANCO?sslmode=require`. Usuário e senha **não** entram na URL.
-- `DB_USER`: o `USUARIO` da URL.
-- `DB_PASSWORD`: a `SENHA` da URL.
-- Use a conexão **direta**, com *Connection pooling* desligado (o servidor não tem `-pooler` no nome).
-
 Para usar o PostgreSQL local, basta definir `DB_PASSWORD` e `JWT_SECRET`: a URL e o usuário padrão já apontam para `localhost:5432/fintwin` com o usuário `fintwin_app`.
 
 O `JWT_SECRET` assina os tokens de login: quem conhece o valor consegue criar um token válido, então ele deve ser longo e aleatório. Para gerar um no PowerShell:
@@ -179,8 +166,7 @@ Os testes usam um banco **H2 em memória** (configurado em `demo/src/test/resour
 |---|---|
 | `Could not resolve placeholder 'JWT_SECRET'` | A variável `JWT_SECRET` não foi definida. |
 | `JWT_SECRET precisa ter pelo menos 64 caracteres` | O segredo é curto demais. |
-| `'url' must start with "jdbc"` | O `DB_URL` não começa com `jdbc:postgresql://` (ou tem espaço ou aspas antes). |
-| `password authentication failed` | `DB_USER` ou `DB_PASSWORD` incorretos. |
+| `password authentication failed` |  `DB_PASSWORD` incorretos. |
 | `Schema-validation: missing table` ou `missing column` | O banco não tem as tabelas que as entidades Java esperam. |
 
 ### Sobre o banco
