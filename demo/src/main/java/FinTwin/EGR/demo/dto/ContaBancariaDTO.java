@@ -2,9 +2,9 @@ package FinTwin.EGR.demo.dto;
 
 import FinTwin.EGR.demo.model.ContaBancaria;
 import FinTwin.EGR.demo.model.enums.TipoContaBancaria;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,20 +23,17 @@ public class ContaBancariaDTO {
     @NotNull
     private TipoContaBancaria tipoConta;
 
-    @PositiveOrZero
+    @Digits(integer = 13, fraction = 2, message = "Use no maximo 13 digitos e 2 casas decimais.")
     private BigDecimal saldo;
 
-    private String openFinanceAccountId;
-    private LocalDateTime dataUltimaSincronizacao;
-    private LocalDateTime dataProximaSincronizacao;
+    private LocalDateTime saldoAtualizadoEm;
 
     public ContaBancariaDTO() {
     }
 
     public ContaBancariaDTO(Long id, Long usuarioId, String instituicaoFinanceira, String agencia,
                             String numeroConta, TipoContaBancaria tipoConta, BigDecimal saldo,
-                            String openFinanceAccountId, LocalDateTime dataUltimaSincronizacao,
-                            LocalDateTime dataProximaSincronizacao) {
+                            LocalDateTime saldoAtualizadoEm) {
         this.id = id;
         this.usuarioId = usuarioId;
         this.instituicaoFinanceira = instituicaoFinanceira;
@@ -44,9 +41,7 @@ public class ContaBancariaDTO {
         this.numeroConta = numeroConta;
         this.tipoConta = tipoConta;
         this.saldo = saldo;
-        this.openFinanceAccountId = openFinanceAccountId;
-        this.dataUltimaSincronizacao = dataUltimaSincronizacao;
-        this.dataProximaSincronizacao = dataProximaSincronizacao;
+        this.saldoAtualizadoEm = saldoAtualizadoEm;
     }
 
     public static ContaBancariaDTO fromEntity(ContaBancaria conta) {
@@ -63,9 +58,7 @@ public class ContaBancariaDTO {
                 conta.getNumeroConta(),
                 conta.getTipoConta(),
                 conta.getSaldo(),
-                conta.getOpenFinanceAccountId(),
-                conta.getDataUltimaSincronizacao(),
-                conta.getDataProximaSincronizacao()
+                conta.getSaldoAtualizadoEm()
         );
     }
 
@@ -125,27 +118,11 @@ public class ContaBancariaDTO {
         this.saldo = saldo;
     }
 
-    public String getOpenFinanceAccountId() {
-        return openFinanceAccountId;
+    public LocalDateTime getSaldoAtualizadoEm() {
+        return saldoAtualizadoEm;
     }
 
-    public void setOpenFinanceAccountId(String openFinanceAccountId) {
-        this.openFinanceAccountId = openFinanceAccountId;
-    }
-
-    public LocalDateTime getDataUltimaSincronizacao() {
-        return dataUltimaSincronizacao;
-    }
-
-    public void setDataUltimaSincronizacao(LocalDateTime dataUltimaSincronizacao) {
-        this.dataUltimaSincronizacao = dataUltimaSincronizacao;
-    }
-
-    public LocalDateTime getDataProximaSincronizacao() {
-        return dataProximaSincronizacao;
-    }
-
-    public void setDataProximaSincronizacao(LocalDateTime dataProximaSincronizacao) {
-        this.dataProximaSincronizacao = dataProximaSincronizacao;
+    public void setSaldoAtualizadoEm(LocalDateTime saldoAtualizadoEm) {
+        this.saldoAtualizadoEm = saldoAtualizadoEm;
     }
 }

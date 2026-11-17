@@ -23,10 +23,6 @@
         <div class="topbar__subtitle" id="dashboard-date"></div>
       </div>
       <div class="topbar__actions">
-        <div class="sync-pill" id="sync-status">
-          <div class="sync-dot"></div>
-          Open Finance · modo demonstração
-        </div>
         <button class="btn-icon" aria-label="Ajuda">
           <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
             <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/>
@@ -45,7 +41,7 @@
             <div class="kpi-card__icon kpi-card__icon--cyan">💎</div>
           </div>
           <div class="kpi-card__value" id="dashboard-balance">—</div>
-          <div class="kpi-card__delta kpi-card__delta--neutral" id="dashboard-balance-note">Consolidado das contas vinculadas</div>
+          <div class="kpi-card__delta kpi-card__delta--neutral" id="dashboard-balance-note">Soma dos saldos informados</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-card__top">
@@ -69,7 +65,7 @@
             <div class="kpi-card__icon kpi-card__icon--cyan">🛡️</div>
           </div>
           <div class="kpi-card__value" id="dashboard-account-count">—</div>
-          <div class="kpi-card__delta kpi-card__delta--neutral">Instituições conectadas</div>
+          <div class="kpi-card__delta kpi-card__delta--neutral">Contas cadastradas</div>
         </div>
       </div>
 
@@ -154,9 +150,8 @@
           <div class="card-header">
             <div>
               <div class="card-title">Contas vinculadas</div>
-              <div class="card-subtitle" id="accounts-subtitle">Saldos cadastrados</div>
+              <div class="card-subtitle" id="accounts-subtitle">Saldos informados por você</div>
             </div>
-            <button class="btn-sm" type="button" id="sync-all-accounts">Sincronizar contas</button>
           </div>
           <div id="dashboard-accounts"></div>
           <form id="account-form" class="field-group account-form">
@@ -165,8 +160,11 @@
               <div class="field"><label for="account-type">Tipo</label><select id="account-type" name="tipoConta"><option value="CORRENTE">Corrente</option><option value="POUPANCA">Poupança</option><option value="INVESTIMENTO">Investimento</option></select></div>
               <div class="field"><label for="account-number">Conta</label><input id="account-number" name="numeroConta" maxlength="30"></div>
             </div>
-            <div class="field"><label for="account-agency">Agência</label><input id="account-agency" name="agencia" maxlength="20"></div>
-            <button class="btn-sm" type="submit">Vincular conta</button>
+            <div class="field-row">
+              <div class="field"><label for="account-agency">Agência</label><input id="account-agency" name="agencia" maxlength="20"></div>
+              <div class="field"><label for="account-balance">Saldo atual</label><div class="field__prefix"><span>R$</span><input id="account-balance" name="saldo" type="number" step="0.01" inputmode="decimal" placeholder="0,00"></div></div>
+            </div>
+            <button class="btn-sm" type="submit">Adicionar conta</button>
             <p class="workflow-feedback" id="account-feedback" role="status" aria-live="polite"></p>
           </form>
         </div>

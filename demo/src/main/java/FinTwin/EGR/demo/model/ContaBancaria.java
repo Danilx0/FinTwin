@@ -1,5 +1,7 @@
 package FinTwin.EGR.demo.model;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import FinTwin.EGR.demo.model.enums.TipoContaBancaria;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,6 +21,7 @@ public class ContaBancaria extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "usuario_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Usuario usuario;
 
     @Column(nullable = false, length = 100)
@@ -37,11 +40,8 @@ public class ContaBancaria extends BaseEntity {
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal saldo = BigDecimal.ZERO;
 
-    private String openFinanceAccountId;
-
-    private LocalDateTime dataUltimaSincronizacao;
-
-    private LocalDateTime dataProximaSincronizacao;
+    /** Quando o usuario informou o saldo pela ultima vez. */
+    private LocalDateTime saldoAtualizadoEm;
 
     
     public ContaBancaria() {
@@ -60,16 +60,10 @@ public class ContaBancaria extends BaseEntity {
 
     
     public ContaBancaria(Usuario usuario, String instituicaoFinanceira, String agencia, String numeroConta, 
-                         TipoContaBancaria tipoConta, BigDecimal saldo, String openFinanceAccountId) {
+                         TipoContaBancaria tipoConta, BigDecimal saldo) {
         this(usuario, instituicaoFinanceira, tipoConta, saldo);
         this.agencia = agencia;
         this.numeroConta = numeroConta;
-        this.openFinanceAccountId = openFinanceAccountId;
-    }
-
-    public void atualizarSincronizacaoOpenFinance() {
-        this.dataUltimaSincronizacao = LocalDateTime.now();
-        this.dataProximaSincronizacao = this.dataUltimaSincronizacao.plusHours(6);
     }
 
     public Usuario getUsuario() {
@@ -120,27 +114,11 @@ public class ContaBancaria extends BaseEntity {
         this.saldo = saldo;
     }
 
-    public String getOpenFinanceAccountId() {
-        return openFinanceAccountId;
+    public LocalDateTime getSaldoAtualizadoEm() {
+        return saldoAtualizadoEm;
     }
 
-    public void setOpenFinanceAccountId(String openFinanceAccountId) {
-        this.openFinanceAccountId = openFinanceAccountId;
-    }
-
-    public LocalDateTime getDataUltimaSincronizacao() {
-        return dataUltimaSincronizacao;
-    }
-
-    public void setDataUltimaSincronizacao(LocalDateTime dataUltimaSincronizacao) {
-        this.dataUltimaSincronizacao = dataUltimaSincronizacao;
-    }
-
-    public LocalDateTime getDataProximaSincronizacao() {
-        return dataProximaSincronizacao;
-    }
-
-    public void setDataProximaSincronizacao(LocalDateTime dataProximaSincronizacao) {
-        this.dataProximaSincronizacao = dataProximaSincronizacao;
+    public void setSaldoAtualizadoEm(LocalDateTime saldoAtualizadoEm) {
+        this.saldoAtualizadoEm = saldoAtualizadoEm;
     }
 }

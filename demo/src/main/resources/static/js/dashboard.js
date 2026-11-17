@@ -4,7 +4,6 @@ const coresCategoria = ['#3DF1FF', '#B7E7FC', '#FFB347', '#7DD3FC', '#94A3B8', '
 if (sessaoDashboard) {
   iniciarDashboard();
   document.getElementById('account-form').addEventListener('submit', vincularConta);
-  document.getElementById('sync-all-accounts').addEventListener('click', sincronizarTodasContas);
 }
 
 async function iniciarDashboard() {
@@ -15,9 +14,9 @@ async function iniciarDashboard() {
   await Promise.allSettled([
     carregarTransacoesDashboard(),
     carregarContasDashboard(),
-    carregarProjecoesDashboard()
+    carregarProjecoesDashboard(),
+    carregarQuarentenasDashboard()
   ]);
-  carregarQuarentenasDashboard();
 }
 
 async function carregarTransacoesDashboard() {
@@ -126,7 +125,9 @@ async function carregarContasDashboard() {
     const total = contas.reduce((soma, conta) => soma + Number(conta.saldo || 0), 0);
     document.getElementById('dashboard-balance').textContent = formatarMoeda(total);
     document.getElementById('dashboard-account-count').textContent = String(contas.length);
-    document.getElementById('accounts-subtitle').textContent = `${contas.length} conta(s) · saldo cadastrado`;
+    document.getElementById('accounts-subtitle').textContent = contas.length
+      ? `${contas.length} conta(s) · saldos informados por você`
+      : 'Saldos informados por você';
     contas.forEach(conta => lista.append(criarLinhaConta(conta)));
     if (!contas.length) lista.textContent = 'Nenhuma conta bancária vinculada.';
   } catch (erro) {
@@ -140,6 +141,7 @@ function criarLinhaConta(conta) {
   const item = document.createElement('div');
   item.className = 'conta-item';
   const detalhes = document.createElement('div');
+  detalhes.className = 'conta-item__detalhes';
   const banco = document.createElement('div');
   banco.className = 'conta-item__bank';
   banco.textContent = `🏦 ${conta.instituicaoFinanceira}`;
@@ -147,23 +149,155 @@ function criarLinhaConta(conta) {
   identificacao.className = 'conta-item__agency';
   identificacao.textContent = `${formatarEnum(conta.tipoConta)}${conta.numeroConta ? ` ·· ${conta.numeroConta.slice(-4)}` : ''}`;
   detalhes.append(banco, identificacao);
+  const valor = Number(conta.saldo || 0);
   const saldo = document.createElement('div');
-  saldo.className = 'conta-item__balance';
-  saldo.textContent = formatarMoeda(Number(conta.saldo || 0));
+  saldo.className = `conta-item__balance${valor < 0 ? ' conta-item__balance--negativo' : ''}`;
+  saldo.textContent = formatarMoeda(valor);
   const atualizacao = document.createElement('span');
   atualizacao.className = 'conta-item__sync';
-  atualizacao.textContent = conta.dataUltimaSincronizacao
-    ? `Atualizada ${new Date(conta.dataUltimaSincronizacao).toLocaleString('pt-BR')}`
-    : 'Aguardando primeira sincronização';
+  atualizacao.textContent = conta.saldoAtualizadoEm
+    ? `Saldo de ${new Date(conta.saldoAtualizadoEm).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}`
+    : 'Saldo ainda não informado';
   const acao = document.createElement('button');
   acao.type = 'button';
-  acao.className = 'btn-sm';
-  acao.textContent = 'Sincronizar';
-  acao.addEventListener('click', () => sincronizarConta(conta.id));
+  acao.className = 'btn-sm conta-item__acao';
+  acao.textContent = 'Atualizar saldo';
+  acao.setAttribute('aria-label', `Atualizar saldo de ${conta.instituicaoFinanceira}`);
+  acao.dataset.contaId = conta.id;
+  acao.addEventListener('click', () => abrirEdicaoSaldo(item, conta));
+  const remover = document.createElement('button');
+  remover.type = 'button';
+  remover.className = 'conta-item__remover';
+  remover.title = 'Remover conta';
+  remover.setAttribute('aria-label', `Remover a conta ${conta.instituicaoFinanceira}`);
+  remover.innerHTML = '<svg width="15" height="15" fill="none" viewBox="0 0 16 16" aria-hidden="true">'
+    + '<path d="M2.5 4h11M6.5 4V2.75h3V4M4 4l.6 9.25h6.8L12 4M6.75 6.75v4M9.25 6.75v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  remover.addEventListener('click', () => pedirConfirmacaoRemocao(item, conta));
+  const botoes = document.createElement('div');
+  botoes.className = 'conta-item__acoes';
+  botoes.append(acao, remover);
   const coluna = document.createElement('div');
-  coluna.append(saldo, atualizacao, acao);
+  coluna.className = 'conta-item__valores';
+  coluna.append(saldo, atualizacao, botoes);
   item.append(detalhes, coluna);
   return item;
+}
+
+function pedirConfirmacaoRemocao(item, conta) {
+  document.querySelectorAll('#dashboard-accounts .conta-item__confirmar').forEach(caixa => {
+    caixa.closest('.conta-item')?.classList.remove('conta-item--confirmando');
+    caixa.remove();
+  });
+
+  const caixa = criarElemento('div', 'conta-item__confirmar');
+  caixa.setAttribute('role', 'group');
+  caixa.setAttribute('aria-label', `Confirmar remoção de ${conta.instituicaoFinanceira}`);
+  const texto = criarElemento('span', 'conta-item__confirmar-texto',
+    'Remover esta conta? As transações já registradas continuam salvas.');
+  const confirmar = criarElemento('button', 'btn-sm btn-sm--perigo', 'Remover');
+  confirmar.type = 'button';
+  const cancelar = criarElemento('button', 'btn-sm conta-item__cancelar', 'Cancelar');
+  cancelar.type = 'button';
+  const botoes = criarElemento('div', 'conta-item__botoes');
+  botoes.append(confirmar, cancelar);
+  caixa.append(texto, botoes);
+
+  const fechar = () => {
+    caixa.remove();
+    item.classList.remove('conta-item--confirmando');
+    item.querySelector('.conta-item__remover')?.focus();
+  };
+  cancelar.addEventListener('click', fechar);
+  caixa.addEventListener('keydown', evento => {
+    if (evento.key === 'Escape') fechar();
+  });
+  confirmar.addEventListener('click', async () => {
+    confirmar.disabled = true;
+    cancelar.disabled = true;
+    const posicao = [...document.querySelectorAll('#dashboard-accounts .conta-item')].indexOf(item);
+    try {
+      await requisicaoApi(`/api/open-finance/contas/${conta.id}`, { method: 'DELETE' });
+      await carregarContasDashboard();
+      mostrarFeedback(document.getElementById('account-feedback'), `Conta ${conta.instituicaoFinanceira} removida.`);
+      const restantes = document.querySelectorAll('#dashboard-accounts .conta-item__acao');
+      (restantes[Math.min(posicao, restantes.length - 1)] || document.getElementById('bank-name')).focus();
+    } catch (erro) {
+      confirmar.disabled = false;
+      cancelar.disabled = false;
+      mostrarFeedback(document.getElementById('account-feedback'), erro.message, true);
+    }
+  });
+
+  item.classList.add('conta-item--confirmando');
+  item.append(caixa);
+  cancelar.focus();
+}
+
+function abrirEdicaoSaldo(item, conta) {
+  const coluna = item.querySelector('.conta-item__valores');
+  const formulario = document.createElement('form');
+  formulario.className = 'conta-item__edicao';
+  formulario.noValidate = true;
+
+  const campo = document.createElement('div');
+  campo.className = 'field__prefix';
+  const prefixo = criarElemento('span', null, 'R$');
+  const entrada = document.createElement('input');
+  entrada.type = 'number';
+  entrada.step = '0.01';
+  entrada.inputMode = 'decimal';
+  entrada.required = true;
+  entrada.value = Number(conta.saldo || 0).toFixed(2);
+  entrada.setAttribute('aria-label', `Novo saldo de ${conta.instituicaoFinanceira}`);
+  if (conta.tipoConta !== 'CORRENTE') entrada.min = '0';
+  campo.append(prefixo, entrada);
+
+  const salvar = criarElemento('button', 'btn-sm', 'Salvar');
+  salvar.type = 'submit';
+  const cancelar = criarElemento('button', 'btn-sm conta-item__cancelar', 'Cancelar');
+  cancelar.type = 'button';
+  const erro = criarElemento('p', 'conta-item__erro');
+  erro.setAttribute('role', 'alert');
+
+  const botoes = criarElemento('div', 'conta-item__botoes');
+  botoes.append(salvar, cancelar);
+  formulario.append(campo, botoes, erro);
+
+  const fechar = () => {
+    formulario.replaceWith(coluna);
+    coluna.querySelector('.conta-item__acao').focus();
+  };
+  cancelar.addEventListener('click', fechar);
+  formulario.addEventListener('keydown', evento => {
+    if (evento.key === 'Escape') fechar();
+  });
+  formulario.addEventListener('submit', async evento => {
+    evento.preventDefault();
+    if (entrada.value.trim() === '' || Number.isNaN(Number(entrada.value))) {
+      erro.textContent = 'Informe um valor.';
+      entrada.focus();
+      return;
+    }
+    salvar.disabled = true;
+    erro.textContent = '';
+    try {
+      await requisicaoApi(`/api/open-finance/contas/${conta.id}/saldo`, {
+        method: 'PUT',
+        body: JSON.stringify({ saldo: entrada.value })
+      });
+      mostrarFeedback(document.getElementById('account-feedback'), `Saldo de ${conta.instituicaoFinanceira} atualizado.`);
+      await carregarContasDashboard();
+      document.querySelector(`.conta-item__acao[data-conta-id="${conta.id}"]`)?.focus();
+    } catch (falha) {
+      erro.textContent = falha.message;
+      salvar.disabled = false;
+      entrada.focus();
+    }
+  });
+
+  coluna.replaceWith(formulario);
+  entrada.focus();
+  entrada.select();
 }
 
 async function carregarProjecoesDashboard() {
@@ -203,51 +337,39 @@ function desenharProjecao(projecao) {
 
 async function vincularConta(evento) {
   evento.preventDefault();
+  const formulario = evento.currentTarget;
   const feedback = document.getElementById('account-feedback');
-  const valores = Object.fromEntries(new FormData(evento.currentTarget).entries());
-  mostrarFeedback(feedback, 'Vinculando conta...');
+  const valores = Object.fromEntries(new FormData(formulario).entries());
+  if (!valores.saldo) delete valores.saldo;
+  mostrarFeedback(feedback, 'Adicionando conta...');
   try {
     await requisicaoApi(`/api/open-finance/contas/${sessaoDashboard.usuario.id}`, {
       method: 'POST',
       body: JSON.stringify(valores)
     });
-    evento.currentTarget.reset();
-    mostrarFeedback(feedback, 'Conta vinculada. O saldo permanece zerado até haver integração com a instituição financeira.');
+    formulario.reset();
+    mostrarFeedback(feedback, 'Conta adicionada. Use "Atualizar saldo" sempre que o valor mudar.');
     await carregarContasDashboard();
   } catch (erro) {
     mostrarFeedback(feedback, erro.message, true);
   }
 }
 
-async function sincronizarConta(contaId) {
+/** Pedidos ainda sem decisao: os que aguardam as 24h e os que ja podem ser decididos. */
+async function carregarQuarentenasDashboard() {
+  const total = document.getElementById('dashboard-impulso-total');
+  const espera = document.getElementById('dashboard-impulso-espera');
+  const liberados = document.getElementById('dashboard-impulso-liberados');
   try {
-    await requisicaoApi(`/api/open-finance/sincronizar/${contaId}`, { method: 'POST' });
-    await carregarContasDashboard();
-  } catch (erro) {
-    mostrarFeedback(document.getElementById('account-feedback'), erro.message, true);
-  }
-}
-
-async function sincronizarTodasContas() {
-  try {
-    await requisicaoApi(`/api/open-finance/sincronizar-todas/${sessaoDashboard.usuario.id}`, { method: 'POST' });
-    await carregarContasDashboard();
-    mostrarFeedback(document.getElementById('account-feedback'), 'Horários de sincronização atualizados. Os saldos não são consultados sem integração bancária.');
-  } catch (erro) {
-    mostrarFeedback(document.getElementById('account-feedback'), erro.message, true);
-  }
-}
-
-function carregarQuarentenasDashboard() {
-  let quarentenas = [];
-  try {
-    quarentenas = JSON.parse(sessionStorage.getItem(`fintwin.quarentenas.${sessaoDashboard.usuario.id}`) || '[]');
+    const travas = await requisicaoApi(`/api/financas/trava-impulso/${sessaoDashboard.usuario.id}`);
+    const pendentes = travas.filter(trava => trava.status === 'QUARENTENA');
+    const prontos = pendentes.filter(trava => trava.podeSerLiberada).length;
+    total.textContent = formatarMoeda(pendentes.reduce((soma, trava) => soma + Number(trava.valor || 0), 0));
+    espera.textContent = String(pendentes.length - prontos);
+    liberados.textContent = String(prontos);
   } catch {
-    quarentenas = [];
+    total.textContent = '—';
+    espera.textContent = '—';
+    liberados.textContent = '—';
   }
-  const agora = Date.now();
-  const emEspera = quarentenas.filter(item => item.liberacao > agora);
-  document.getElementById('dashboard-impulso-total').textContent = formatarMoeda(emEspera.reduce((soma, item) => soma + Number(item.valor || 0), 0));
-  document.getElementById('dashboard-impulso-espera').textContent = String(emEspera.length);
-  document.getElementById('dashboard-impulso-liberados').textContent = String(quarentenas.length - emEspera.length);
 }

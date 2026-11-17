@@ -58,9 +58,6 @@
   font-size: 11px;
   font-weight: 500;
 }
-
-.kpi-card__delta--up      { color: var(--positive); }
-.kpi-card__delta--down    { color: var(--negative); }
 .kpi-card__delta--neutral { color: var(--text-muted); }
 
 .section-grid {
@@ -211,7 +208,6 @@
 .data-row__label           { color: var(--text-secondary); }
 .data-row__value           { font-weight: 600; color: var(--text-primary); }
 .data-row__value--positive { color: var(--positive); }
-.data-row__value--negative { color: var(--negative); }
 .data-row__value--warning  { color: var(--warning); }
 
 .conta-item {
@@ -248,3 +244,138 @@
   .kpi-grid    { grid-template-columns: minmax(0, 1fr); }
   .bottom-grid { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ---------- Saldo informado manualmente ---------- */
+.conta-item { gap: 12px; }
+
+.conta-item__valores {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.conta-item__balance--negativo { color: var(--negative); }
+
+.conta-item__acao { margin-top: 4px; }
+
+.conta-item__edicao {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  width: 190px;
+  flex-shrink: 0;
+}
+
+.conta-item__edicao .field__prefix { width: 100%; }
+
+.conta-item__edicao .field__prefix input {
+  width: 100%;
+  padding: 8px 10px 8px 40px;
+  font: 600 13px 'Inter', sans-serif;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+
+.conta-item__edicao .field__prefix input:focus {
+  border-color: var(--cyan);
+  box-shadow: var(--shadow-glow);
+}
+
+.conta-item__botoes {
+  display: flex;
+  gap: 6px;
+}
+
+.conta-item__cancelar {
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+
+.conta-item__erro {
+  font-size: 11px;
+  color: var(--negative);
+  text-align: right;
+}
+
+.conta-item__erro:empty { display: none; }
+
+@media (max-width: 420px) {
+  .conta-item { flex-wrap: wrap; }
+  .conta-item__valores,
+  .conta-item__edicao { width: 100%; align-items: stretch; }
+  .conta-item__balance,
+  .conta-item__sync,
+  .conta-item__erro { text-align: left; }
+  .conta-item__botoes .btn-sm { flex: 1; }
+}
+
+#dashboard-accounts { margin-bottom: 20px; }
+.conta-item__bank { overflow-wrap: anywhere; }
+
+/* ---------- Remover conta ---------- */
+.conta-item { flex-wrap: wrap; }
+
+.conta-item__acoes {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.conta-item__acoes .conta-item__acao { margin-top: 0; }
+
+.conta-item__remover {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.conta-item__remover:hover,
+.conta-item--confirmando .conta-item__remover {
+  color: var(--negative);
+  border-color: rgba(255, 107, 122, 0.35);
+  background: rgba(255, 107, 122, 0.06);
+}
+
+.conta-item__remover:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+.conta-item__confirmar {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255, 107, 122, 0.06);
+  border: 1px solid rgba(255, 107, 122, 0.25);
+  border-radius: var(--radius-sm);
+}
+
+.conta-item__confirmar-texto {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 420px) {
+  .conta-item__acoes .conta-item__acao { flex: 1; }
+}
+
+.conta-item__detalhes { flex: 1 1 0; min-width: 0; }
