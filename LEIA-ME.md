@@ -78,21 +78,31 @@ Entrega a interface responsiva (320 px a 3440 px), painéis customizáveis, supo
 - Acesso a um banco **PostgreSQL**. Em produção o banco fica na **Neon** (Postgres gerenciado, região AWS São Paulo).
 - O Maven não precisa ser instalado: o projeto usa o wrapper (`mvnw` / `mvnw.cmd`) que fica na pasta `demo/`.
 
-### Variáveis de ambiente do banco
+### Variáveis de ambiente
 
-A aplicação lê a conexão com o banco de três variáveis de ambiente (veja `demo/src/main/resources/application.properties`):
+A aplicação lê a conexão com o banco e o segredo do login de variáveis de ambiente (veja `demo/src/main/resources/application.properties`):
 
 | Variável | Obrigatória | Exemplo | Padrão, se não for definida |
 |---|---|---|---|
 | `DB_URL` | Sim, para usar a Neon | `jdbc:postgresql://ep-xxxx.sa-east-1.aws.neon.tech/neondb?sslmode=require` | `jdbc:postgresql://localhost:5432/fintwin` |
 | `DB_USER` | Sim, para usar a Neon | `neondb_owner` | `fintwin_app` |
 | `DB_PASSWORD` | Sempre | (senha do banco) | — |
+| `JWT_SECRET` | Sempre | texto aleatório com **pelo menos 64 caracteres** | — (a aplicação não sobe sem ele) |
+| `PORT` | Não | `10000` (o Render define sozinho) | `8080` |
 
 Como montar os valores a partir da URL de conexão da Neon (`postgresql://USUARIO:SENHA@SERVIDOR/BANCO?sslmode=require`):
 - `DB_URL`: começa com `jdbc:postgresql://`, seguido de `SERVIDOR/BANCO?sslmode=require`. Usuário e senha **não** entram na URL.
 - `DB_USER`: o `USUARIO` da URL.
 - `DB_PASSWORD`: a `SENHA` da URL.
 - Use a URL de conexão **direta**, com *Connection pooling* desligado (o servidor não tem `-pooler` no nome).
+
+`JWT_SECRET` assina os tokens de login: quem conhece o valor consegue criar um token válido, então ele deve ser longo, aleatório e diferente em cada ambiente. Para gerar um no PowerShell:
+
+```powershell
+-join ((48..57) + (65..90) + (97..122) | Get-Random -Count 62) + -join ((48..57) + (65..90) + (97..122) | Get-Random -Count 62)
+```
+
+Trocar o `JWT_SECRET` desconecta todos os usuários logados (os tokens antigos deixam de valer).
 
 > As senhas nunca devem ser escritas no código nem em arquivos versionados. O arquivo `.env` já está no `.gitignore`.
 
@@ -102,7 +112,7 @@ A aplicação usa um banco que **já existe**, com as tabelas criadas (o da Neon
 
 ### Executando
 
-**Pelo Eclipse:** importe a pasta `demo/` como projeto Maven. Em *Run Configurations → Environment*, cadastre `DB_URL`, `DB_USER` e `DB_PASSWORD` e rode a classe principal como *Spring Boot App* / *Java Application*. Ao trocar as variáveis, pare a aplicação (*Terminate*) e rode de novo: o reinício automático do DevTools não relê as variáveis.
+**Pelo Eclipse:** importe a pasta `demo/` como projeto Maven. Em *Run Configurations → Environment*, cadastre `DB_URL`, `DB_USER`, `DB_PASSWORD` e `JWT_SECRET` e rode a classe principal como *Spring Boot App* / *Java Application*. Ao trocar as variáveis, pare a aplicação (*Terminate*) e rode de novo: o reinício automático do DevTools não relê as variáveis.
 
 **Pelo terminal** (dentro de `demo/`):
 
@@ -111,6 +121,7 @@ A aplicação usa um banco que **já existe**, com as tabelas criadas (o da Neon
 $env:DB_URL="jdbc:postgresql://SERVIDOR/neondb?sslmode=require"
 $env:DB_USER="neondb_owner"
 $env:DB_PASSWORD="sua-senha"
+$env:JWT_SECRET="segredo-aleatorio-com-pelo-menos-64-caracteres"
 .\mvnw.cmd spring-boot:run
 ```
 
@@ -119,6 +130,7 @@ $env:DB_PASSWORD="sua-senha"
 export DB_URL="jdbc:postgresql://SERVIDOR/neondb?sslmode=require"
 export DB_USER="neondb_owner"
 export DB_PASSWORD="sua-senha"
+export JWT_SECRET="segredo-aleatorio-com-pelo-menos-64-caracteres"
 ./mvnw spring-boot:run
 ```
 
@@ -131,6 +143,16 @@ A aplicação sobe em **http://localhost:8080**. Para conferir se está no ar, u
 ```
 
 Os testes usam um banco **H2 em memória** (configurado em `demo/src/test/resources/application.properties`) e não precisam das variáveis acima nem acessam a Neon.
+
+### Publicando no Render
+
+A raiz do repositório tem um `Dockerfile` que compila a aplicação e gera uma imagem pronta para rodar.
+
+1. No [Render](https://render.com), crie um **New → Web Service** ligado a este repositório, na branch `main`, com **Language: Docker**. A raiz do repositório é o diretório certo, pois é onde está o `Dockerfile`.
+2. Em **Environment**, cadastre `DB_URL`, `DB_USER`, `DB_PASSWORD` (os mesmos da Neon) e `JWT_SECRET` (um valor novo, diferente do usado no Eclipse).
+3. Em **Health Check Path**, informe `/actuator/health`.
+
+Cada envio para a `main` gera uma nova publicação. No plano gratuito, o serviço "dorme" após 15 minutos sem acesso, e a primeira visita depois disso leva de 30 a 60 segundos.
 
 ---
 
